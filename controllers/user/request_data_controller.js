@@ -24,6 +24,7 @@ exports.mobhistoryrequestdata = async function (req, res) {
         date: true,
         approve: true,
         url: true,
+        id_user: true,
       },
     });
 
@@ -37,7 +38,8 @@ exports.mobhistoryrequestdata = async function (req, res) {
       body: row.body,
       date: row.date,
       approve: row.approve,
-      url: row.url,
+      url: row.url,      
+      id_user: row.id_user,
     }));
 
     return res.status(200).json({ status: 200, values: formattedResult });
@@ -75,6 +77,7 @@ exports.mobhistoryrequestdatabyid = async function (req, res) {
       date: requestData.date,
       approve: requestData.approve,
       url: requestData.url,
+      id_user: requestData.id_user,
     };
 
     return res.status(200).json({ status: 200, values: formattedResult });
