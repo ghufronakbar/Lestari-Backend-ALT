@@ -157,9 +157,7 @@ exports.mobanimalpost = async (req, res) => {
         latitude,
         image,
         amount: parseInt(amount),
-        id_user,
-        date: new Date(date_now),
-        updated_at: new Date(date_now)
+        id_user
       }
     });
 
@@ -256,8 +254,7 @@ exports.mobediteditableanimal = async (req, res) => {
         longitude,
         latitude,
         amount,
-        image,
-        updated_at: date_now,
+        image,        
       },
     });
 
