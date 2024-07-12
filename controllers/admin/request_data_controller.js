@@ -153,9 +153,7 @@ exports.websendrequestdata = async (req, res) => {
         if(!id_request_data){
             return res.status(400).json({ status: 400, message: "ID request data is required." });
         }
-        if(!local_name || !latin_name || !habitat || !description || !city || !longitude || !latitude || !image || !amount || !date_start || !date_end){
-            return res.status(400).json({ status: 400, message: "All fields are required." });
-        }
+        
         const validateRequestData = await prisma.request_Datas.findFirst({
             where: { id_request_data: parseInt(id_request_data) },
             select: { approve: true }
