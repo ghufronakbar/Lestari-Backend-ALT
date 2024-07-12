@@ -346,15 +346,18 @@ exports.deleteImageByURL = async (req, res) => {
     // Ekstrak file ID dari URL Google Drive
     const fileId = extractFileIdFromUrl(imageUrl);
 
-    if (!fileId) { return res.status(400).json({ status: 400, message: 'Invalid Image URL' }); }
-
     const authClient = await authorize();
     await deleteFileFromDrive(authClient, fileId);
 
+    const selectImage = await prisma.animals.findFirst({
+      where: {
+        image: imageUrl
+      }
+    })
     // Hapus informasi gambar dari database menggunakan Prisma
     const deletedImage = await prisma.animals.delete({
       where: {
-        image: imageUrl,
+        id_animal: selectImage.id_animal,
       },
     });
 
