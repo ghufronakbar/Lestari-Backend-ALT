@@ -130,15 +130,14 @@ exports.mobaddrequestdata = async function (req, res) {
         profession: profession,
         instances: instances,
         subject: subject,
-        body: body,
-        date: date_now,
+        body: body,        
         approve: 0,
         id_user: id_user,
         url: "",
       },
     });
 
-    return res.status(200).json({ keterangan: "berhasil menambah data" });
+    return res.status(200).json({ keterangan: "Berhasil menambah data" });
   } catch (error) {
     console.error("Error adding request data:", error);
     return res.status(500).send("Internal Server Error");
