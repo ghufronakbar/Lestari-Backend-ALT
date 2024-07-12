@@ -7,7 +7,8 @@ const apiUser = require("./controllers/user");
 
 module.exports = function (app) {
   // API ADMIN
-  app.route("/v1/web/login")
+  app
+    .route("/v1/web/login")
     .post(apiAdmin.account_controller.login);
 
   app
@@ -62,13 +63,72 @@ module.exports = function (app) {
     .route("/v1/web/history/request/data/:id")
     .get(adminVerification, apiAdmin.history_request_data_controller.webhistoryrequestdataid);
 
-  app.route("/v1/web/users").get(adminVerification, apiAdmin.user_controller.webusers);
+  app
+    .route("/v1/web/users")
+    .get(adminVerification, apiAdmin.user_controller.webusers);
 
-  app.route("/v1/web/user/:id").get(adminVerification, apiAdmin.user_controller.webuserid);
+  app
+    .route("/v1/web/user/:id")
+    .get(adminVerification, apiAdmin.user_controller.webuserid);
 
   app
     .route("/v1/web/user/suspend")
     .put(adminVerification, apiAdmin.user_controller.webusersuspend);
+
+
+  // CREATE ACCOUNT
+  app
+    .route("/v1/web/create-account")
+    .post(apiAdmin.account_controller.create_admin);
+
+  // VERIFY
+  app
+    .route("/v1/web/verify-account/:token")
+    .get(apiAdmin.account_controller.verify_account);
+
+  // RESET
+  app
+    .route("/v1/web/reset-password")
+    .post(apiAdmin.account_controller.reset_password);
+
+  // GET ADMINS
+  app
+    .route("/v1/web/admins")
+    .get(adminVerification, apiAdmin.account_controller.show_admin);
+
+  // DELETE ADMIN
+  app
+    .route("/v1/web/admin/delete/:id_admin")
+    .delete(adminVerification, apiAdmin.account_controller.delete_admin);
+
+  // EDIT ADMIN
+  app
+    .route("/v1/web/admin/edit")
+    .put(adminVerification, apiAdmin.account_controller.update_admin);
+
+    // PROFILE 
+    app
+    .route("/v1/web/admin/profile")
+    .get(adminVerification, apiAdmin.account_controller.admin_profile);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // API USER
   app.route("/v1/mob/user/login").post(userVerification, apiUser.auth.login);

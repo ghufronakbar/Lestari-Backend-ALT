@@ -9,11 +9,15 @@ generator client {
 }
 
 model Admins {
-  id_admin      Int     @id @default(autoincrement())
-  email         String  @unique
+  id_admin      Int       @id @default(autoincrement())
+  email         String    @unique
   password      String
-  refresh_token String? @db.Text()
+  name          String?
+  refresh_token String?   @db.Text()
   ip_address    String?
+  super_admin   Int?      @default(0)
+  created_at    DateTime? @default(now())
+  updated_at    DateTime? @default(now()) @updatedAt
 }
 
 model Animals {
@@ -80,7 +84,7 @@ model Request_Datas {
   date            DateTime @default(now()) @db.Date()
   approve         Int
   id_user         Int
-  url             String? @default("")
+  url             String?  @default("")
   user            Users    @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
 }
 
@@ -115,4 +119,14 @@ model Users {
   animals               Animals[]
   request_datas         Request_Datas[]
   history_request_datas History_Request_Datas[]
+}
+
+model Verify {
+  id_verify  Int      @id @default(autoincrement())
+  email      String
+  token      String
+  expired_at DateTime
+  used       Int      @default(0)
+  type       String
+  name       String?  @default("")
 }

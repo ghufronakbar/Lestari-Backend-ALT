@@ -84,7 +84,6 @@ exports.webanimals = async (req, res) => {
             total_data: count,
         }
 
-
         return res.status(200).json({ status: 200, pagination, values: results });
     } catch (error) {
         console.error(error);
