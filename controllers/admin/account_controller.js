@@ -240,7 +240,7 @@ exports.reset_password = async (req, res) => {
     const baseUrl = `http://${hostname}${port}`;
 
     try {
-        if (!email) { return res.status(400).json({ status: 400, message: "Email required" }) }
+        if (!email || email === "") { return res.status(400).json({ status: 400, message: "Email required" }) }
 
         const checkEmail = await prisma.admins.findFirst({
             where: {
@@ -294,7 +294,7 @@ exports.reset_password = async (req, res) => {
 
         await sendEmail(email, "Reset Password", htmlContent);
 
-        return res.status(200).json({ status: 200, message: "Email sent" });
+        return res.status(200).json({ status: 200, message: "Email sent to " + email });
 
 
 
