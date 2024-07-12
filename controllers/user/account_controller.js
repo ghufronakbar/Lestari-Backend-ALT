@@ -1,10 +1,13 @@
 "use strict";
 
-const path = require("path");
 const multer = require("multer");
 const md5 = require("md5");
 const nodemailer = require("nodemailer");
 const email_style = require('../../lib/email_style');
+const { uploadFileToDrive } = require('../../lib/uploadFileToDrive');
+const { deleteFileFromDrive } = require('../../lib/deleteFromDrive');
+const { authorize } = require('../../lib/authorize');
+const { extractFileIdFromUrl } = require('../../lib/extractFileIdFromUrl');
 
 
 const { PrismaClient } = require('@prisma/client');
@@ -117,7 +120,7 @@ exports.mobregisteruser = async (req, res) => {
     const now = new Date();
     const date_now = now.toISOString(); // Menggunakan ISO string untuk format tanggal
 
-    await prisma.request_accounts.create({
+    await prisma.request_Accounts.create({
       data: {
         name,
         email,
@@ -163,6 +166,7 @@ exports.mobaccounteditname = async (req, res) => {
   }
 };
 
+//GA KEPAKE
 exports.mobaccounteditpicture = async (req, res) => {
   const { picture } = req.body;
   const id_user = req.decoded.id_user;
@@ -188,6 +192,10 @@ exports.mobaccounteditpicture = async (req, res) => {
   }
 };
 
+
+
+
+
 exports.mob_update_profile = async (req, res) => {
   const id_user = req.decoded.id_user;
 
@@ -202,30 +210,8 @@ exports.mob_update_profile = async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    const uploadDirectory = path.join(__dirname, '..', '..', 'upload', 'profiles');
-
-    let fileName;
-    if (user.picture) {
-      // Menggunakan modul url untuk mengurai URL
-      const parsedUrl = new URL(user.picture);
-      // Menggunakan modul path untuk mendapatkan nama file dari path
-      fileName = path.basename(parsedUrl.pathname);
-    } else {
-      // Jika gambar tidak ada atau null, generate nama file baru
-      const datetime = new Date().toISOString().replace(/[-T:\.Z]/g, "");
-      fileName = `${user.name}_${datetime}.jpg`;
-    }
-
-    // storage engine
-    const storage = multer.diskStorage({
-      destination: uploadDirectory,
-      filename: (req, file, cb) => {
-        cb(null, fileName);
-      },
-    });
-
     const upload = multer({
-      storage: storage,
+      storage: multer.memoryStorage(),
       limits: {
         fileSize: 10 * 1024 * 1024, // 10 MB (dalam bytes)
       },
@@ -233,40 +219,65 @@ exports.mob_update_profile = async (req, res) => {
 
     upload(req, res, async (err) => {
       if (err instanceof multer.MulterError) {
-        // Jika terjadi kesalahan dari multer (misalnya melebihi batas ukuran file)
         return res.json({
           success: 0,
           message: err.message,
         });
       } else if (err) {
-        // Jika terjadi kesalahan lainnya
         return res.json({
           success: 0,
           message: "Terjadi kesalahan saat mengunggah gambar",
         });
       }
 
-      // Update database dengan nama file baru
+      const fileBuffer = req.file.buffer;
+      const datetime = new Date().toISOString().replace(/[-T:\.Z]/g, "");
+      const fileName = `${user.name}_${datetime}.jpg`;
+
+      const authClient = await authorize();
+
+      let deleteError = false;
+
+      if (user.picture) {
+        const fileId = extractFileIdFromUrl(user.picture);
+        if (fileId) {
+          try {
+            await deleteFileFromDrive(authClient, fileId);
+          } catch (deleteErr) {
+            console.error('Error deleting previous profile picture:', deleteErr);
+            deleteError = true;  // Track that delete encountered an error, but continue with upload
+          }
+        }
+      }
+
+      const uploadedFile = await uploadFileToDrive(authClient, fileName, fileBuffer, 'profile');
+
       await prisma.users.update({
         where: {
           id_user: id_user,
         },
         data: {
-          picture: fileName,
+          picture: `https://drive.google.com/uc?export=view&id=${uploadedFile.id}`,
         },
       });
 
-      res.json({
-        success: 200,
-        image_url: fileName,
+      res.status(200).json({
+        status: 200,
+        image_url: `https://drive.google.com/uc?export=view&id=${uploadedFile.id}`,
+        image_id: uploadedFile.id,
+        message: deleteError ? 
+          "Profile picture updated successfully, but previous picture could not be deleted" : 
+          "Profile picture updated successfully",
       });
     });
-
   } catch (error) {
     console.error("Error updating profile:", error);
     return res.status(500).send("Internal Server Error");
   }
 };
+
+
+
 exports.mobaccounteditpassword = async (req, res) => {
   const { old_password, new_password } = req.body;
   const id_user = req.decoded.id_user;

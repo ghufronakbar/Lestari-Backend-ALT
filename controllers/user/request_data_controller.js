@@ -3,11 +3,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-exports.mobhistoryrequestdata = async function (req, res) {
-  const { hostname } = req;
-  const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-  const baseUrl = `http://${hostname}${port}`;
-
+exports.mobhistoryrequestdata = async function (req, res) {  
   try {
     const id_user = req.decoded.id_user;
     const requestDatas = await prisma.request_Datas.findMany({
@@ -41,7 +37,7 @@ exports.mobhistoryrequestdata = async function (req, res) {
       body: row.body,
       date: row.date,
       approve: row.approve,
-      url: baseUrl + `/v1/mob/data/` + row.url,
+      url: row.url,
     }));
 
     return res.status(200).json({ status: 200, values: formattedResult });
@@ -52,9 +48,6 @@ exports.mobhistoryrequestdata = async function (req, res) {
 };
 
 exports.mobhistoryrequestdatabyid = async function (req, res) {
-  const { hostname } = req;
-  const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-  const baseUrl = `http://${hostname}${port}`;
 
   try {
     const id_request_data = parseInt(req.params.id_request_data);
@@ -81,7 +74,7 @@ exports.mobhistoryrequestdatabyid = async function (req, res) {
       body: requestData.body,
       date: requestData.date,
       approve: requestData.approve,
-      url: baseUrl + `/v1/mob/data/` + requestData.url,
+      url: requestData.url,
     };
 
     return res.status(200).json({ status: 200, values: formattedResult });

@@ -1,6 +1,5 @@
 "use strict";
 
-const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 
@@ -9,6 +8,9 @@ const prisma = new PrismaClient();
 
 const { authorize } = require('../../lib/authorize');
 const { uploadFileToDrive } = require('../../lib/uploadFileToDrive')
+const { deleteFileFromDrive } = require('../../lib/deleteFromDrive');
+const { extractFileIdFromUrl } = require('../../lib/extractFileIdFromUrl')
+
 
 
 exports.mobeditableanimals = async (req, res) => {
@@ -168,6 +170,7 @@ exports.mobanimalpost = async (req, res) => {
   }
 };
 // DELETE ANIMAL BY USER -DONE
+
 exports.deleteAnimalById = async (req, res) => {
   const { id_animal } = req.params;
   const { id_user } = req.decoded;
@@ -188,11 +191,12 @@ exports.deleteAnimalById = async (req, res) => {
     }
 
     const imageUrl = animal.image;
-    const filename = imageUrl ? imageUrl.substring(imageUrl.lastIndexOf('/') + 1) : null;
-    const imagePath = filename ? path.join("upload/animals", filename) : null;
-
-    if (filename && fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
+    if (imageUrl) {
+      const fileId = extractFileIdFromUrl(imageUrl);
+      if (fileId) {
+        const authClient = await authorize();
+        await deleteFileFromDrive(authClient, fileId);
+      }
     }
 
     await prisma.animals.delete({
@@ -207,6 +211,7 @@ exports.deleteAnimalById = async (req, res) => {
     return res.status(500).json({ status: 500, message: 'Internal Server Error' });
   }
 };
+
 
 exports.mobediteditableanimal = async (req, res) => {
   const {
@@ -268,7 +273,7 @@ exports.mob_upload_image = async (req, res) => {
 
   // storage engine
   const storage = multer.memoryStorage();
-  
+
   const upload = multer({
     storage: storage,
     limits: {
@@ -324,47 +329,33 @@ exports.mob_upload_image = async (req, res) => {
 };
 
 // DELETE ANIMAL BY USER
-exports.deleteImageByURL = function (req, res) {
-  let imageUrl = req.body.imageUrl;
+exports.deleteImageByURL = async (req, res) => {
+  const imageUrl = req.body.imageUrl;
 
-  // Tentukan path direktori tempat file-file diunggah
-  const uploadDirectory = path.join(__dirname, "..", "..", "upload", "animals");
+  if (!imageUrl) {
+    return res.status(400).send('Image URL is required');
+  }
 
-  // Menggunakan modul url untuk mengurai URL
-  const parsedUrl = new URL(imageUrl);
+  try {
+    // Ekstrak file ID dari URL Google Drive
+    const fileId = extractFileIdFromUrl(imageUrl);
 
-  // Menggunakan modul path untuk mendapatkan nama file dari path
-  const fileName = path.basename(parsedUrl.pathname);
-  const filePath = path.join(uploadDirectory, fileName);
+    if (!fileId) { return res.status(400).json({ status: 400, message: 'Invalid Image URL' }); }
 
-  // Cek apakah file ada
-  fs.access(filePath, fs.constants.F_OK, (err) => {
-    if (err) {
-      console.error("File not found:", err);
-      return res.status(404).send("File not found");
-    }
+    const authClient = await authorize();
+    await deleteFileFromDrive(authClient, fileId);
 
-    // Hapus file
-    fs.unlink(filePath, async (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-        return res.status(500).send("Error deleting file");
-      }
-
-      try {
-        // Hapus informasi gambar dari database menggunakan Prisma
-        const deletedImage = await prisma.animals.deleteMany({
-          where: {
-            image: fileName,
-          },
-        });
-
-        console.log("File deleted successfully");
-        res.send("File deleted successfully");
-      } catch (error) {
-        console.error("Error deleting image record from database:", error);
-        res.status(500).send("Error deleting image record from database");
-      }
+    // Hapus informasi gambar dari database menggunakan Prisma
+    const deletedImage = await prisma.animals.delete({
+      where: {
+        image: fileId,
+      },
     });
-  });
+
+    res.status(200).json({ status: 200, message: 'Image deleted successfully', })
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    res.status(500).json({ status: 500, message: 'Error deleting image' });
+  }
+
 };

@@ -148,7 +148,7 @@ module.exports = function (app) {
     .post(userVerification, apiUser.editable_animal_controller.mobanimalpost);
 
   app
-    .route("/v1/mob/animal/editable/edit/:id_animal")
+    .route("/v1/mob/animal/editable/edit/:id_animal") // without image
     .put(userVerification, apiUser.editable_animal_controller.mobediteditableanimal);
 
   app
@@ -156,11 +156,11 @@ module.exports = function (app) {
     .delete(userVerification, apiUser.editable_animal_controller.deleteAnimalById);
 
   app
-    .route("/v1/mob/animal/upload/image")
+    .route("/v1/mob/animal/upload/image") // image 
     .post(userVerification, apiUser.editable_animal_controller.mob_upload_image);
 
   app
-    .route("/v1/mob/animal/delete/image")
+    .route("/v1/mob/animal/delete/image") // delete image
     .delete(userVerification, apiUser.editable_animal_controller.deleteImageByURL);
 
   app
@@ -182,6 +182,7 @@ module.exports = function (app) {
   app
     .route("/v1/mob/user/account/edit/picture")
     .put(userVerification, apiUser.account_controller.mob_update_profile);
+  
 
   app
     .route("/v1/mob/user/account/edit/password")
