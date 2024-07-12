@@ -154,7 +154,7 @@ exports.mobanimalpost = async (req, res) => {
     if(!id_user){
       return res.status(404).json({ status: 404, message: "User not found" });
     }
-    
+
     const animal = await prisma.animals.create({
       data: {
         local_name,
@@ -321,7 +321,7 @@ exports.mob_upload_image = async (req, res) => {
         fileName: fileData.name,
         fileId: fileData.id,
         fileURL: fileData.webViewLink,
-        fileUc: `https://drive.google.com/uc?export=view&id=${fileData.id}`,
+        file_url: `https://drive.google.com/uc?export=view&id=${fileData.id}`,
         message: 'Image uploaded successfully',
       });
     } catch (error) {
