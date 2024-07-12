@@ -354,7 +354,7 @@ exports.deleteImageByURL = async (req, res) => {
     // Hapus informasi gambar dari database menggunakan Prisma
     const deletedImage = await prisma.animals.delete({
       where: {
-        image: fileId,
+        image: imageUrl,
       },
     });
 
