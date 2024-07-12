@@ -7,6 +7,10 @@ const path = require("path");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const { authorize } = require('../../lib/authorize');
+const { uploadFileToDrive } = require('../../lib/uploadFileToDrive')
+
+
 exports.mobeditableanimals = async (req, res) => {
   const { id_user } = req.decoded;
   const today = new Date();
