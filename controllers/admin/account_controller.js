@@ -113,7 +113,7 @@ exports.create_admin = async (req, res) => {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Verifikasi Admin Lestari</title>
-                    ${email_style}
+                    ${email_style()}
                 </head>                
                 <body>                
                     <div class="container">
@@ -160,11 +160,11 @@ exports.verify_account = async (req, res) => {
             }
         });
 
-        if (!checkToken) { return res.status(400).json({ status: 400, message: "Invalid token" }) }
+        if (!checkToken) { return res.status(400).send("Invalid key") }
 
-        if (checkToken.used === 1) { return res.status(400).json({ status: 400, message: "Token already used" }) }
+        if (checkToken.used === 1) { return res.status(400).send("Key already used") }
 
-        if (checkToken.expired_at < new Date()) { return res.status(400).json({ status: 400, message: "Token expired" }) }
+        if (checkToken.expired_at < new Date()) { return res.status(400).send("Key expired") }
 
         await prisma.verify.update({
             where: {
@@ -200,7 +200,7 @@ exports.verify_account = async (req, res) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Akun Terverifikasi</title>
-            ${email_style}
+            ${email_style()}
         </head>
         <body>
             <div class="container">
@@ -269,7 +269,7 @@ exports.reset_password = async (req, res) => {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Reset Password</title>
-                    ${email_style}
+                    ${email_style()}
                 </head>                
                 <body>                
                     <div class="container">
@@ -397,10 +397,10 @@ exports.show_admin = async (req, res) => {
 
 exports.update_admin = async (req, res) => {
     const id_admin = parseInt(req.decoded.id_admin);
-    const { name, password, confirmation_password } = req.body;    
+    const { name, password, confirmation_password } = req.body;
 
     try {
-        if(!name) {
+        if (!name) {
             return res.status(400).json({ status: 400, message: 'Name is required' });
         }
         if ((!password && !confirmation_password) || (password == "" && confirmation_password == "")) {
@@ -411,7 +411,7 @@ exports.update_admin = async (req, res) => {
                 data: {
                     name,
                 }
-            });            
+            });
             return res.status(200).json({ status: 200, message: 'Profile updated' });
         } else if (password && confirmation_password) {
             if (password !== confirmation_password) {
@@ -427,7 +427,7 @@ exports.update_admin = async (req, res) => {
                     name,
                     password: md5(password)
                 }
-            });            
+            });
             return res.status(200).json({ status: 200, message: 'Profile and Password updated' });
         }
     }
