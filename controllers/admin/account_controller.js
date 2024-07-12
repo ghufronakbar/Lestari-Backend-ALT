@@ -179,7 +179,7 @@ exports.verify_account = async (req, res) => {
             const createAdmin = await prisma.admins.create({
                 data: {
                     email: checkToken.email,
-                    password: md5(password)
+                    password: md5(password())
                 }
             });
         } else if (checkToken.type === "RESET") {
@@ -188,7 +188,7 @@ exports.verify_account = async (req, res) => {
                     email: checkToken.email
                 },
                 data: {
-                    password: md5(password)
+                    password: md5(password())
                 }
             });
         }
@@ -210,7 +210,7 @@ exports.verify_account = async (req, res) => {
                 <p>Silahkan login menggunakan akun berikut.</p>    
                 <ul>
                     <li><strong>Email:</strong> ${checkToken.email}</li>                                            
-                    <li><strong>Password:</strong> ${password}</li>
+                    <li><strong>Password:</strong> ${password()}</li>
                 </ul>                                 
                 <p>Terima kasih telah menggunakan layanan kami. Jika Anda memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi kami di nomor yang tercantum di bawah ini atau melalui email.</p>
                 <p>Salam hormat,</p>
