@@ -203,7 +203,7 @@ exports.websendrequestdata = async (req, res) => {
             }
         });
 
-        const select = {};
+        const select = {date: true, update_at: true};
 
         const selectedFields = [];
         if (local_name) selectedFields.push("local_name");
@@ -250,8 +250,8 @@ exports.websendrequestdata = async (req, res) => {
             if (row.longitude) obj.longitude = row.longitude;
             if (row.latitude) obj.latitude = row.latitude;
             if (row.amount) obj.amount = row.amount;
-            if (image && row.image !== undefined && row.image !== null) {
-                obj.image = row.image;
+            if (image && row.image !== undefined) {
+                obj.image = row.image === null ? '' : row.image;
             }            
             return obj;
         }).filter(obj => Object.keys(obj).length > 0);
