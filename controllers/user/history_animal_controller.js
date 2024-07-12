@@ -23,7 +23,7 @@ exports.mobhistoryanimals = async (req, res) => {
         latitude: true,
       },
       orderBy: {
-        updated_at: 'desc',
+        id_animal: 'desc',
       },
     });
 
@@ -117,9 +117,7 @@ exports.mobanimalpost = async (req, res) => {
         latitude,
         image,
         amount,
-        id_user,
-        date: date_now,
-        updated_at: date_now
+        id_user,       
       }
     });
     return res.status(200).json({ status: 200, message: "Success" });
@@ -150,8 +148,7 @@ exports.mobediteditableanimal = async (req, res) => {
         city,
         longitude,
         latitude,
-        amount,
-        updated_at: date_now
+        amount,        
       }
     });
     return res.status(200).json({ status: 200, message: "Success" });

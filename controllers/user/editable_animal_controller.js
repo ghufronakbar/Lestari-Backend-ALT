@@ -79,6 +79,9 @@ exports.mobeditableanimalid = async (req, res) => {
   const baseUrl = `http://${hostname}${port}`;
 
   try {
+    if(!id_user){
+      return res.status(404).json({ status: 404, message: "User not found" });
+    }
     const animal = await prisma.animals.findFirst({
       where: {
         id_user: id_user,
@@ -145,7 +148,13 @@ exports.mobanimalpost = async (req, res) => {
   const now = new Date();
   const date_now = now.toISOString().slice(0, 19).replace('T', ' ');
 
+  
+
   try {
+    if(!id_user){
+      return res.status(404).json({ status: 404, message: "User not found" });
+    }
+    
     const animal = await prisma.animals.create({
       data: {
         local_name,
