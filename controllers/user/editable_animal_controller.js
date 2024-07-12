@@ -321,7 +321,7 @@ exports.mob_upload_image = async (req, res) => {
         fileName: fileData.name,
         fileId: fileData.id,
         fileURL: fileData.webViewLink,
-        file_url: `https://drive.google.com/uc?export=view&id=${fileData.id}`,
+        image_url: `https://drive.google.com/uc?export=view&id=${fileData.id}`,
         message: 'Image uploaded successfully',
       });
     } catch (error) {
