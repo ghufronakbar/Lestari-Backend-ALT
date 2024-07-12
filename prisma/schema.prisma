@@ -1,0 +1,118 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+model Admins {
+  id_admin      Int     @id @default(autoincrement())
+  email         String  @unique
+  password      String
+  refresh_token String? @db.Text()
+  ip_address    String?
+}
+
+model Animals {
+  id_animal   Int       @id @default(autoincrement())
+  local_name  String
+  latin_name  String
+  habitat     String
+  description String?   @db.Text()
+  city        String
+  longitude   String
+  latitude    String
+  image       String
+  amount      Int
+  id_user     Int
+  date        DateTime? @default(now())
+  updated_at  DateTime? @default(now())
+  user        Users     @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model History_Request_Datas {
+  id_history_request_data Int        @id @default(autoincrement())
+  email                   String
+  name                    String
+  profession              String
+  instances               String
+  subject                 String
+  body                    String     @db.Text()
+  id_send_data            Int
+  id_user                 Int
+  date                    DateTime?
+  send_data               Send_Datas @relation(fields: [id_send_data], references: [id_send_data], onDelete: Cascade, onUpdate: Cascade)
+  user                    Users      @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Otps {
+  id_otp     Int       @id @default(autoincrement())
+  email      String?
+  otp        String?
+  expired_at DateTime?
+  used       Int
+}
+
+model Request_Accounts {
+  id_request_account Int      @id @default(autoincrement())
+  name               String
+  email              String
+  phone              String
+  profession         String
+  instances          String
+  subject            String
+  body               String   @db.Text()
+  date               DateTime
+  approve            Int
+}
+
+model Request_Datas {
+  id_request_data Int      @id @default(autoincrement())
+  name            String
+  email           String
+  profession      String
+  instances       String
+  subject         String   @db.Text()
+  body            String   @db.Text()
+  date            DateTime @default(now()) @db.Date()
+  approve         Int
+  id_user         Int
+  url             String? @default("")
+  user            Users    @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Send_Datas {
+  id_send_data          Int                     @id @default(autoincrement())
+  local_name            Int
+  latin_name            Int
+  habitat               Int
+  description           Int
+  city                  Int
+  longitude             Int
+  latitude              Int
+  image                 Int
+  amount                Int
+  date_start            DateTime                @db.Date()
+  date_end              DateTime                @db.Date()
+  History_Request_Datas History_Request_Datas[]
+}
+
+model Users {
+  id_user               Int                     @id @default(autoincrement())
+  email                 String?
+  name                  String?
+  phone                 String?
+  password              String?
+  picture               String?
+  refresh_token         String?                 @db.Text()
+  created_at            DateTime?
+  updated_at            DateTime?
+  status                Int?
+  ip_address            String?
+  animals               Animals[]
+  request_datas         Request_Datas[]
+  history_request_datas History_Request_Datas[]
+}
