@@ -126,7 +126,9 @@ exports.create_admin = async (req, res) => {
                             <li><strong>Created At:</strong> ${formattedDateTime}</li>
                             <li><strong>Expired In:</strong> 12 hours</li>                                                       
                         </ul>                                 
-                        <a href="${baseUrl}/v1/web/verify-account/${token}" class="button">Verifikasi</a>                                      
+                        <a href="${baseUrl}/v1/web/verify-account/${token}" class="button">Verifikasi</a>
+                        <h3>Atau anda dapat klik link di bawah ini</h3>                                      
+                        <a href="${baseUrl}/v1/web/verify-account/${token}">${baseUrl}/v1/web/verify-account/${token}</a>
                         <p>Terima kasih telah menggunakan layanan kami. Jika Anda memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi kami di nomor yang tercantum di bawah ini atau melalui email.</p>
                         <p>Salam hormat,</p>
                         <p>Tim Lestari</p>
@@ -248,7 +250,7 @@ exports.reset_password = async (req, res) => {
             }
         });
 
-        if (!checkEmail) { return res.status(400).json({ status: 400, message: "Email not found" }) }
+        if (!checkEmail) { return res.status(400).json({ status: 400, message: `Email ${email} not found` }) }
 
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "12h" });
 
