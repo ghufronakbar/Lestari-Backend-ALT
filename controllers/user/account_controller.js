@@ -40,9 +40,7 @@ exports.mobaccount = async (req, res) => {
       email: userData.email,
       name: userData.name,
       phone: userData.phone,
-      picture: userData.picture
-        ? `${baseUrl}/v1/mob/image/profile/${userData.picture}`
-        : `${baseUrl}/v1/mob/image/profile/default.png`,
+      picture: userData.picture ? userData.picture : `${baseUrl}/v1/mob/image/profile/default.png`,
     };
 
     return res.status(200).json({ status: 200, values: results });

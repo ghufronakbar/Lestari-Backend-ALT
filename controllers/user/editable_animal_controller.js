@@ -43,7 +43,7 @@ exports.mobeditableanimals = async (req, res) => {
         updated_at: true
       },
       orderBy: {
-        updated_at: 'desc'
+        id_animal: 'desc'
       }
     });
 
@@ -56,7 +56,7 @@ exports.mobeditableanimals = async (req, res) => {
       city: animal.city,
       longitude: animal.longitude,
       latitude: animal.latitude,
-      image: animal.image ? `${baseUrl}/v1/mob/image/animal/${animal.image}` : `${baseUrl}/v1/mob/image/animal/default.png`,
+      image: animal.image ? animal.image : `${baseUrl}/v1/mob/image/animal/default.png`,
       amount: animal.amount,
       updated_at: animal.updated_at
     }));
@@ -111,7 +111,7 @@ exports.mobeditableanimalid = async (req, res) => {
       city: animal.city,
       longitude: animal.longitude,
       latitude: animal.latitude,
-      image: animal.image ? `${baseUrl}/v1/mob/image/animal/${animal.image}` : `${baseUrl}/v1/mob/image/animal/default.png`,
+      image: animal.image ? animal.image : `${baseUrl}/v1/mob/image/animal/default.png`,
       amount: animal.amount,
       id_user: animal.id_user,
       date: animal.date,
@@ -263,28 +263,18 @@ exports.mobediteditableanimal = async (req, res) => {
   }
 };
 
-
-
-exports.mob_upload_image = function (req, res) {
-  const id_user = req.decoded.id_user;
+exports.mob_upload_image = async (req, res) => {
+  const { id_user } = req.decoded;
 
   // storage engine
-  const storage = multer.diskStorage({
-    destination: "./upload/animals",
-    filename: (req, file, cb) => {
-      cb(
-        null,
-        `${file.fieldname}_${id_user + Date.now()}${path.extname(file.originalname)}`
-      );
-    },
-  });
-
+  const storage = multer.memoryStorage();
+  
   const upload = multer({
     storage: storage,
     limits: {
       fileSize: 10 * 1024 * 1024, // 10 MB (dalam bytes)
     },
-  }).single("image");
+  }).single('image');
 
   upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
@@ -297,33 +287,37 @@ exports.mob_upload_image = function (req, res) {
       // Jika terjadi kesalahan lainnya
       return res.json({
         success: 0,
-        message: "Terjadi kesalahan saat mengunggah gambar",
+        message: 'Terjadi kesalahan saat mengunggah gambar',
+      });
+    }
+
+    if (!req.file) {
+      return res.json({
+        success: 0,
+        message: 'Tidak ada file yang diunggah',
       });
     }
 
     try {
-      // Jika berhasil, Anda dapat mengakses informasi file yang diunggah melalui req.file
-      const imageUrl = req.file.filename;
+      const fileName = `${req.file.fieldname}_${id_user + Date.now()}${path.extname(req.file.originalname)}`;
+      const fileBuffer = req.file.buffer;
 
-      // Simpan informasi gambar ke database menggunakan Prisma
-      const uploadedImage = await prisma.animals.create({
-        data: {
-          image: imageUrl,
-          id_user: id_user,
-          // tambahkan kolom lain yang sesuai dengan kebutuhan Anda
-        },
-      });
+      const authClient = await authorize();
+      const fileData = await uploadFileToDrive(authClient, fileName, fileBuffer, 'animals');
 
       return res.json({
         success: 200,
-        image_url: imageUrl,
-        message: "Image uploaded successfully",
+        fileName: fileData.name,
+        fileId: fileData.id,
+        fileURL: fileData.webViewLink,
+        fileUc: `https://drive.google.com/uc?export=view&id=${fileData.id}`,
+        message: 'Image uploaded successfully',
       });
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error('Error uploading image:', error);
       return res.status(500).json({
         success: 0,
-        message: "Internal Server Error",
+        message: 'Internal Server Error',
       });
     }
   });

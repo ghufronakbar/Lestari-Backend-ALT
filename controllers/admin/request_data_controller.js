@@ -150,6 +150,12 @@ exports.websendrequestdata = async (req, res) => {
     } = req.body;
 
     try {
+        if(!id_request_data){
+            return res.status(400).json({ status: 400, message: "ID request data is required." });
+        }
+        if(!local_name || !latin_name || !habitat || !description || !city || !longitude || !latitude || !image || !amount || !date_start || !date_end){
+            return res.status(400).json({ status: 400, message: "All fields are required." });
+        }
         const validateRequestData = await prisma.request_Datas.findFirst({
             where: { id_request_data: parseInt(id_request_data) },
             select: { approve: true }
@@ -163,11 +169,21 @@ exports.websendrequestdata = async (req, res) => {
 
         const sendData = await prisma.send_Datas.create({
             data: {
-                local_name, latin_name, habitat, description, city,
-                longitude, latitude, image, amount, date_start, date_end
+                local_name: parseInt(local_name),
+                latin_name: parseInt(latin_name),
+                habitat: parseInt(habitat),
+                description: parseInt(description),
+                city: parseInt(city),
+                longitude: parseInt(longitude),
+                latitude: parseInt(latitude),
+                image: parseInt(image),
+                amount: parseInt(amount),
+                date_start,
+                date_end
             }
         });
 
+        // example ISO-8601 DateTime: 2023-09-21T15:45:30.000Z
         const id_send_data = sendData.id_send_data;
 
         const requestData = await prisma.request_Datas.findUnique({
@@ -236,9 +252,9 @@ exports.websendrequestdata = async (req, res) => {
             if (row.longitude) obj.longitude = row.longitude;
             if (row.latitude) obj.latitude = row.latitude;
             if (row.amount) obj.amount = row.amount;
-            if (row.image !== undefined && row.image !== null && row.image !== "") {
+            if (image && row.image !== undefined && row.image !== null) {
                 obj.image = row.image;
-            }
+            }            
             return obj;
         }).filter(obj => Object.keys(obj).length > 0);
 
@@ -267,7 +283,7 @@ exports.websendrequestdata = async (req, res) => {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Informasi Pengiriman Data Konservasi Satwa dari Lestari</title>
-                ${email_style}
+                ${email_style()}
             </head>
             <body>
                 <div class="container">

@@ -10,6 +10,9 @@ exports.login = async function (req, res) {
   const { email, password } = req.body;
 
   try {
+
+    if(!email || !password) {
+      return res.status(400).json({status:400, message: "Email dan Password wajib diisi!"})}
     const user = await prisma.users.findFirst({
       where: {
         email: email,
