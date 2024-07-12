@@ -203,7 +203,7 @@ exports.websendrequestdata = async (req, res) => {
             }
         });
 
-        const select = {date: true, updated_at: true};
+        const select = {};
 
         const selectedFields = [];
         if (local_name) selectedFields.push("local_name");

@@ -29,11 +29,11 @@ model Animals {
   city        String
   longitude   String
   latitude    String
-  image       String
   amount      Int
   id_user     Int
   date        DateTime? @default(now())
   updated_at  DateTime? @default(now())
+  image       String
   user        Users     @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
 }
 
