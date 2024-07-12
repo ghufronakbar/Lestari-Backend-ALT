@@ -131,7 +131,7 @@ module.exports = function (app) {
 
 
   // API USER
-  app.route("/v1/mob/user/login").post(userVerification, apiUser.auth.login);
+  app.route("/v1/mob/user/login").post( apiUser.auth.login);
 
   app
     .route("/v1/mob/animals/editable")
