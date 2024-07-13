@@ -5,10 +5,6 @@ const prisma = new PrismaClient();
 
 exports.webusers = async (req, res) => {
 
-    const { hostname } = req;
-    const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-    const baseUrl = `http://${hostname}${port}`;
-
     try {
         let { page, search, status } = req.query
         status = status && parseInt(status)
@@ -53,7 +49,7 @@ exports.webusers = async (req, res) => {
             id_user: user.id_user,
             name: user.name,
             email: user.email,
-            picture: user.picture ? user.picture : `${baseUrl}/v1/mob/image/profile/default.png`,
+            picture: user.picture,
             phone: user.phone,
             created_at: user.created_at,
             updated_at: user.updated_at,
@@ -78,10 +74,6 @@ exports.webusers = async (req, res) => {
 exports.webuserid = async (req, res) => {
     const id = parseInt(req.params.id);
 
-    const { hostname } = req;
-    const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-    const baseUrl = `http://${hostname}${port}`;
-
     try {
         const user = await prisma.users.findUnique({
             where: { id_user: id },
@@ -105,7 +97,7 @@ exports.webuserid = async (req, res) => {
             id_user: user.id_user,
             name: user.name,
             email: user.email,
-            picture: user.picture ? user.picture : `${baseUrl}/v1/mob/image/profile/default.png`,
+            picture: user.picture ,
             phone: user.phone,
             created_at: user.created_at,
             updated_at: user.updated_at,
