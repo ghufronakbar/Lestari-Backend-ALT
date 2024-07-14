@@ -106,8 +106,8 @@ module.exports = function (app) {
     .route("/v1/web/admin/edit")
     .put(adminVerification, apiAdmin.account_controller.update_admin);
 
-    // PROFILE 
-    app
+  // PROFILE 
+  app
     .route("/v1/web/admin/profile")
     .get(adminVerification, apiAdmin.account_controller.admin_profile);
 
@@ -131,7 +131,7 @@ module.exports = function (app) {
 
 
   // API USER
-  app.route("/v1/mob/user/login").post( apiUser.auth.login);
+  app.route("/v1/mob/user/login").post(apiUser.auth.login);
 
   app
     .route("/v1/mob/animals/editable")
@@ -182,7 +182,7 @@ module.exports = function (app) {
   app
     .route("/v1/mob/user/account/edit/picture")
     .put(userVerification, apiUser.account_controller.mob_update_profile);
-  
+
 
   app
     .route("/v1/mob/user/account/edit/password")
@@ -202,7 +202,7 @@ module.exports = function (app) {
 
   app
     .route("/v1/mob/user/register")
-    .post(userVerification, apiUser.account_controller.mobregisteruser);
+    .post(apiUser.account_controller.mobregisteruser);
 
   app
     .route("/v1/mob/user/check-password")
