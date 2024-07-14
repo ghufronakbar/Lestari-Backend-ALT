@@ -116,10 +116,7 @@ exports.mobregisteruser = async (req, res) => {
     deskripsi: body
   } = req.body;
 
-  try {
-    const now = new Date();
-    const date_now = now.toISOString(); // Menggunakan ISO string untuk format tanggal
-
+  try {        
     await prisma.request_Accounts.create({
       data: {
         name,
@@ -128,8 +125,7 @@ exports.mobregisteruser = async (req, res) => {
         profession,
         instances,
         subject,
-        body,
-        date: date_now,
+        body,        
         approve: 0,
       },
     });

@@ -69,8 +69,8 @@ model Request_Accounts {
   instances          String
   subject            String
   body               String   @db.Text()
-  date               DateTime
-  approve            Int
+  date               DateTime @default(now())
+  approve            Int      @default(0)
 }
 
 model Request_Datas {
