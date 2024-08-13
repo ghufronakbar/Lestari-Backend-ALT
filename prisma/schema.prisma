@@ -130,3 +130,9 @@ model Verify {
   type       String
   name       String?  @default("")
 }
+
+model Suggestion {
+  id_suggestion Int    @id @default(autoincrement())
+  local_name    String
+  latin_name    String
+}

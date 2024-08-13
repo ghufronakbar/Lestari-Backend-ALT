@@ -4,6 +4,7 @@ const adminVerification = require("./middleware/admin_verification");
 const userVerification = require("./middleware/user_verification");
 const apiAdmin = require("./controllers/admin");
 const apiUser = require("./controllers/user");
+const routeCache = require('./middleware/routeCache')
 
 module.exports = function (app) {
   // API ADMIN
@@ -112,13 +113,22 @@ module.exports = function (app) {
     .get(adminVerification, apiAdmin.account_controller.admin_profile);
 
 
+  // SUGGESTIONS
+  app
+    .route("/v1/web/admin/suggestions")
+    .get(adminVerification, apiAdmin.suggestion_controller.getAllSugestions);
 
+  app
+    .route("/v1/web/admin/suggestions")
+    .post(adminVerification, apiAdmin.suggestion_controller.createSuggestion)
 
+  app
+    .route("/v1/web/admin/suggestions/:id")
+    .put(adminVerification, apiAdmin.suggestion_controller.editSuggestion)
 
-
-
-
-
+  app
+    .route("/v1/web/admin/suggestions/:id")
+    .delete(adminVerification, apiAdmin.suggestion_controller.deleteSuggestion)
 
 
 
@@ -220,5 +230,9 @@ module.exports = function (app) {
   // REQUEST DATA GUEST
   app.route("/v1/web/user/request-data")
     .post(apiUser.request_data_controller.requestDataGuest);
+
+  // SUGESTIONS
+  app.route("/v1/mob/user/suggestion")
+    .get(routeCache(600), apiUser.suggestion_controller.showSuggestion);
 };
 

@@ -3,12 +3,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-exports.webanimals = async (req, res) => {
-
-    const { hostname } = req;
-    const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-    const baseUrl = `http://${hostname}${port}`;
-
+exports.webanimals = async (req, res) => {    
     try {
         let { page, search, date_start, date_end } = req.query
         if (search === undefined || search === '') { search = '' }

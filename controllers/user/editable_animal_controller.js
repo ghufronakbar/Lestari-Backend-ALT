@@ -11,6 +11,24 @@ const { uploadFileToDrive } = require('../../lib/uploadFileToDrive')
 const { deleteFileFromDrive } = require('../../lib/deleteFromDrive');
 const { extractFileIdFromUrl } = require('../../lib/extractFileIdFromUrl')
 
+const createSuggestion = async (local_name, latin_name) => {
+  const check = await prisma.suggestion.count({
+    where: {
+      local_name: { equals: local_name, mode: 'insensitive' }
+    }
+  })
+  if (check === 0) {
+    return
+  } else {
+    const create = await prisma.suggestion.create({
+      data: {
+        local_name,
+        latin_name
+      }
+    })
+    return
+  }
+}
 
 
 exports.mobeditableanimals = async (req, res) => {
@@ -18,10 +36,6 @@ exports.mobeditableanimals = async (req, res) => {
   const today = new Date();
   const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
   const formattedDate = sevenDaysAgo.toISOString().slice(0, 10);
-
-  const { hostname } = req;
-  const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-  const baseUrl = `http://${hostname}${port}`;
 
   try {
     const animals = await prisma.animals.findMany({
@@ -58,7 +72,7 @@ exports.mobeditableanimals = async (req, res) => {
       city: animal.city,
       longitude: animal.longitude,
       latitude: animal.latitude,
-      image: animal.image ? animal.image : `${baseUrl}/v1/mob/image/animal/default.png`,
+      image: animal.image,
       amount: animal.amount,
       updated_at: animal.updated_at
     }));
@@ -74,12 +88,8 @@ exports.mobeditableanimalid = async (req, res) => {
   const { id_user } = req.decoded;
   const { id_animal } = req.params;
 
-  const { hostname } = req;
-  const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-  const baseUrl = `http://${hostname}${port}`;
-
   try {
-    if(!id_user){
+    if (!id_user) {
       return res.status(404).json({ status: 404, message: "User not found" });
     }
     const animal = await prisma.animals.findFirst({
@@ -116,7 +126,7 @@ exports.mobeditableanimalid = async (req, res) => {
       city: animal.city,
       longitude: animal.longitude,
       latitude: animal.latitude,
-      image: animal.image ? animal.image : `${baseUrl}/v1/mob/image/animal/default.png`,
+      image: animal.image,
       amount: animal.amount,
       id_user: animal.id_user,
       date: animal.date,
@@ -145,13 +155,9 @@ exports.mobanimalpost = async (req, res) => {
   } = req.body;
   const { id_user } = req.decoded;
 
-  const now = new Date();
-  const date_now = now.toISOString().slice(0, 19).replace('T', ' ');
-
-  
 
   try {
-    if(!id_user){
+    if (!id_user) {
       return res.status(404).json({ status: 404, message: "User not found" });
     }
 
@@ -170,13 +176,14 @@ exports.mobanimalpost = async (req, res) => {
       }
     });
 
+    await createSuggestion(local_name, latin_name)
+
     return res.status(200).json({ status: 200, values: animal });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ status: 500, message: 'Internal Server Error' });
   }
 };
-// DELETE ANIMAL BY USER -DONE
 
 exports.deleteAnimalById = async (req, res) => {
   const { id_animal } = req.params;
@@ -263,7 +270,7 @@ exports.mobediteditableanimal = async (req, res) => {
         longitude,
         latitude,
         amount,
-        image,        
+        image,
       },
     });
 
