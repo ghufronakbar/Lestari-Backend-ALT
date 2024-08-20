@@ -11,8 +11,9 @@ exports.login = async function (req, res) {
 
   try {
 
-    if(!email || !password) {
-      return res.status(400).json({status:400, message: "Email dan Password wajib diisi!"})}
+    if (!email || !password) {
+      return res.status(400).json({ status: 400, message: "Email dan Password wajib diisi!" })
+    }
     const user = await prisma.users.findFirst({
       where: {
         email: email,
@@ -56,7 +57,8 @@ exports.login = async function (req, res) {
       success: true,
       message: "Token JWT Generated!",
       token: token,
-      data: updatedUser,
+      name: updatedUser.name
+      ,
     });
   } catch (error) {
     console.error("Error during login:", error);
