@@ -1,10 +1,8 @@
-const NodeCache = require('node-cache')
-const cache = new NodeCache()
+const cache = require('./cache')
 
 const routeCache = duration => (req, res, next) => {
     const key = req.originalUrl
-    const cachedResponse = cache.get(key)    
-    console.log(key)
+    const cachedResponse = cache.get(key)          
     if (cachedResponse) {
         return res.send(cachedResponse)
     } else {

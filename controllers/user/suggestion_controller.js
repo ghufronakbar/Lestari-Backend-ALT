@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.showSuggestion = async (req, res) => {
-    const q = req.query.q || ''
+    const q = req.query.q || ''    
     try {
         const getSuggestion = await prisma.suggestion.findMany({
             orderBy: {

@@ -143,7 +143,7 @@ exports.mobaccounteditname = async (req, res) => {
 
   try {
     const now = new Date();
-    const date_now = now.toISOString(); // Menggunakan ISO string untuk format tanggal
+    const date_now = now.toISOString(); 
 
     await prisma.users.update({
       where: {
@@ -169,7 +169,7 @@ exports.mobaccounteditpicture = async (req, res) => {
 
   try {
     const now = new Date();
-    const date_now = now.toISOString(); // Menggunakan ISO string untuk format tanggal
+    const date_now = now.toISOString(); 
 
     await prisma.users.update({
       where: {
@@ -187,9 +187,6 @@ exports.mobaccounteditpicture = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
-
 
 
 exports.mob_update_profile = async (req, res) => {

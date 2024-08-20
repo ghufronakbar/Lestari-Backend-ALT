@@ -4,7 +4,8 @@ const adminVerification = require("./middleware/admin_verification");
 const userVerification = require("./middleware/user_verification");
 const apiAdmin = require("./controllers/admin");
 const apiUser = require("./controllers/user");
-const routeCache = require('./middleware/routeCache')
+const routeCache = require('./middleware/routeCache');
+const clearCache = require("./middleware/clearCache");
 
 module.exports = function (app) {
   // API ADMIN
@@ -120,15 +121,15 @@ module.exports = function (app) {
 
   app
     .route("/v1/web/admin/suggestions")
-    .post(adminVerification, apiAdmin.suggestion_controller.createSuggestion)
+    .post(clearCache('suggestion'), adminVerification, apiAdmin.suggestion_controller.createSuggestion)
 
   app
     .route("/v1/web/admin/suggestions/:id")
-    .put(adminVerification, apiAdmin.suggestion_controller.editSuggestion)
+    .put(clearCache('suggestion'), adminVerification, apiAdmin.suggestion_controller.editSuggestion)
 
   app
     .route("/v1/web/admin/suggestions/:id")
-    .delete(adminVerification, apiAdmin.suggestion_controller.deleteSuggestion)
+    .delete(clearCache('suggestion'), adminVerification, apiAdmin.suggestion_controller.deleteSuggestion)
 
 
 

@@ -26,6 +26,19 @@ exports.createSuggestion = async (req, res) => {
         if (!local_name || !latin_name) {
             return res.status(400).json({ status: 400, message: 'Field cannot be empty' })
         }
+
+        const checkSuggestion = await prisma.suggestion.findFirst({
+            where: {
+                OR: [
+                    { local_name: { equals: local_name, mode: 'insensitive' } },
+                    { latin_name: { equals: latin_name, mode: 'insensitive' } }
+                ]
+            }
+        })
+        if (checkSuggestion) {
+            return res.status(400).json({ status: 400, message: 'Suggestion already exists' })
+        }
+
         const createSuggestion = await prisma.suggestion.create({
             data: {
                 local_name,
