@@ -56,6 +56,7 @@ exports.login = async function (req, res) {
       success: true,
       message: "Token JWT Generated!",
       token: token,
+      data: updatedUser,
     });
   } catch (error) {
     console.error("Error during login:", error);

@@ -11,25 +11,6 @@ const { uploadFileToDrive } = require('../../lib/uploadFileToDrive')
 const { deleteFileFromDrive } = require('../../lib/deleteFromDrive');
 const { extractFileIdFromUrl } = require('../../lib/extractFileIdFromUrl')
 
-const createSuggestion = async (local_name, latin_name) => {
-  const check = await prisma.suggestion.count({
-    where: {
-      local_name: { equals: local_name, mode: 'insensitive' }
-    }
-  })
-  if (check === 0) {
-    return
-  } else {
-    const create = await prisma.suggestion.create({
-      data: {
-        local_name,
-        latin_name
-      }
-    })
-    return
-  }
-}
-
 
 exports.mobeditableanimals = async (req, res) => {
   const { id_user } = req.decoded;
@@ -174,9 +155,7 @@ exports.mobanimalpost = async (req, res) => {
         amount: parseInt(amount),
         id_user
       }
-    });
-
-    await createSuggestion(local_name, latin_name)
+    });    
 
     return res.status(200).json({ status: 200, values: animal });
   } catch (error) {
