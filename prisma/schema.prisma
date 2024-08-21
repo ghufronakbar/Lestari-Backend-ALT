@@ -85,7 +85,7 @@ model Request_Datas {
   approve         Int
   id_user         Int
   url             String?  @default("")
-  attachment      String?
+  attachment      String
   user            Users    @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
 }
 

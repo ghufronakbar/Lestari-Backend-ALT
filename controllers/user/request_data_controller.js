@@ -30,24 +30,11 @@ exports.mobhistoryrequestdata = async function (req, res) {
         approve: true,
         url: true,
         id_user: true,
+        attachment: true,
       },
-    });
+    });  
 
-    const formattedResult = requestDatas.map(row => ({
-      id_request_data: row.id_request_data,
-      name: row.name,
-      email: row.email,
-      profession: row.profession,
-      instances: row.instances,
-      subject: row.subject,
-      body: row.body,
-      date: row.date,
-      approve: row.approve,
-      url: row.url,      
-      id_user: row.id_user,
-    }));
-
-    return res.status(200).json({ status: 200, values: formattedResult });
+    return res.status(200).json({ status: 200, values: requestDatas });
   } catch (error) {
     console.error("Error fetching history request data:", error);
     return res.status(500).send("Internal Server Error");
@@ -75,23 +62,9 @@ exports.mobhistoryrequestdatabyid = async function (req, res) {
         status: 404,
         message: "Request data not found",
       });
-    }
+    } 
 
-    const formattedResult = {
-      id_request_data: requestData.id_request_data,
-      name: requestData.name,
-      email: requestData.email,
-      profession: requestData.profession,
-      instances: requestData.instances,
-      subject: requestData.subject,
-      body: requestData.body,
-      date: requestData.date,
-      approve: requestData.approve,
-      url: requestData.url,
-      id_user: requestData.id_user,
-    };
-
-    return res.status(200).json({ status: 200, values: formattedResult });
+    return res.status(200).json({ status: 200, values: requestData });
   } catch (error) {
     console.error("Error fetching history request data by ID:", error);
     return res.status(500).send("Internal Server Error");
