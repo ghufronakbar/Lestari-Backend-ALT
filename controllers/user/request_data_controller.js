@@ -1,7 +1,12 @@
 "use strict"
 
 const { PrismaClient } = require('@prisma/client');
+const multer = require('multer');
+const { uploadFileToDrive } = require('../../lib/uploadFileToDrive');
+const { authorize } = require('../../lib/authorize');
 const prisma = new PrismaClient();
+const path = require("path");
+
 
 exports.mobhistoryrequestdata = async function (req, res) {  
   try {
@@ -52,8 +57,14 @@ exports.mobhistoryrequestdata = async function (req, res) {
 exports.mobhistoryrequestdatabyid = async function (req, res) {
 
   try {
-    const id_request_data = parseInt(req.params.id_request_data);
-    const requestData = await prisma.request_Datas.findUnique({
+    const id_request_data = parseInt(req.params.id_request_data); 
+    if(isNaN(id_request_data)){
+      return res.status(400).json({
+        status: 400,
+        message: "Invalid request data ID",
+      });
+    }   
+    const requestData = await prisma.request_Datas.findFirst({
       where: {
         id_request_data: id_request_data,
       },
@@ -88,11 +99,18 @@ exports.mobhistoryrequestdatabyid = async function (req, res) {
 };
 
 exports.mobaddrequestdata = async function (req, res) {
+  const { profession, instances, subject, body, attachment } = req.body;
   try {
-    const { profession, instances, subject, body } = req.body;
-    const id_user = req.decoded.id_user;
+    const id_user = req.decoded.id_user;        
 
-    // Get user's name and email
+    if(!profession || !instances || !subject || !body || !attachment) {
+      return res.status(400).json({
+        status: 400,
+        message: "Field tidak boleh kosong",
+      });
+    }   
+
+    
     const userData = await prisma.users.findUnique({
       where: {
         id_user: id_user,
@@ -126,26 +144,94 @@ exports.mobaddrequestdata = async function (req, res) {
       ":" +
       ("0" + now.getSeconds()).slice(-2);
 
-    const newRequestData = await prisma.request_Datas.create({
-      data: {
-        name: name,
-        email: email,
-        profession: profession,
-        instances: instances,
-        subject: subject,
-        body: body,        
-        approve: 0,
-        id_user: id_user,
-        url: "",
-      },
-    });
-
-    return res.status(200).json({ keterangan: "Berhasil menambah data" });
+      const newRequestData = await prisma.request_Datas.create({
+        data: {
+          name: name,
+          email: email,
+          profession: profession,
+          instances: instances,
+          subject: subject,
+          body: body,        
+          approve: 0,
+          id_user: id_user,
+          url: "",
+          attachment: attachment
+        },
+      });
+     
+      return res.status(200).json({
+        status: 200,
+        message: "Permintaan data diterima, cek berkala email!",
+      })
+         
   } catch (error) {
     console.error("Error adding request data:", error);
     return res.status(500).send("Internal Server Error");
   }
 };
+
+exports.uploadAttachment = async (req, res) => {
+  const storage = multer.memoryStorage();
+
+  const upload = multer({
+    storage: storage,
+    limits: {
+      fileSize: 10 * 1024 * 1024, 
+    },    
+  }).single('image');
+
+  upload(req, res, async function (err) {
+    if (err instanceof multer.MulterError) {
+      // Jika terjadi kesalahan dari multer (misalnya melebihi batas ukuran file)
+      return res.status(500).json({
+        status: 500,
+        success: 0,
+        message: err.message,
+      });
+    } else if (err) {
+      // Jika terjadi kesalahan lainnya
+      return res.status(500).json({
+        status: 500,
+        success: 0,
+        message: 'Terjadi kesalahan saat mengunggah gambar',
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        status : 400,
+        success: 0,
+        message: 'Tidak ada file yang diunggah',
+      });
+    }
+
+    try {
+      const fileName = `${req.file.fieldname}_${Date.now()}${path.extname(req.file.originalname)}`;
+      const fileBuffer = req.file.buffer;
+
+      const authClient = await authorize();
+      const fileData = await uploadFileToDrive(authClient, fileName, fileBuffer, 'request');    
+
+      return res.json({
+        success: 200,
+        fileName: fileData.name,
+        fileId: fileData.id,
+        fileURL: fileData.webViewLink,
+        image_url:  `https://drive.google.com/uc?export=view&id=${fileData.id}`,
+        keterangan: "Berhasil mengunggah gambar",
+    }
+  ); 
+
+     
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return res.status(500).json({
+        success: 0,
+        message: 'Internal Server Error',
+      });
+    }
+  });
+}
 
 
 exports.requestDataGuest = async (req, res) => {

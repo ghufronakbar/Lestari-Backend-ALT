@@ -212,6 +212,10 @@ module.exports = function (app) {
     .post(userVerification, apiUser.request_data_controller.mobaddrequestdata);
 
   app
+    .route("/v1/mob/user/request-data/add/attachment")
+    .post(userVerification, apiUser.request_data_controller.uploadAttachment);
+
+  app
     .route("/v1/mob/user/register")
     .post(apiUser.account_controller.mobregisteruser);
 
