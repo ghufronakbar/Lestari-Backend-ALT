@@ -13,7 +13,12 @@ exports.getAllSugestions = async (req, res) => {
             skip: (page - 1) * 10,
             take: 10
         })
-        return res.status(200).json({ status: 200, data: getSuggestion })
+        const pagination = {
+            page,
+            total_page: Math.ceil((await prisma.suggestion.count()) / 10),
+            total_data: await prisma.suggestion.count()
+        }
+        return res.status(200).json({ status: 200,pagination, values: getSuggestion })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 500, message: 'Internal Server Error' })
@@ -45,7 +50,7 @@ exports.createSuggestion = async (req, res) => {
                 latin_name
             }
         })
-        return res.status(200).json({ status: 200, message: 'Suggestion created successfully', data: createSuggestion })
+        return res.status(200).json({ status: 200, message: 'Suggestion created successfully', values: createSuggestion })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 500, message: 'Internal Server Error' })
@@ -60,7 +65,7 @@ exports.deleteSuggestion = async (req, res) => {
                 id_suggestion
             }
         })
-        return res.status(200).json({ status: 200, message: 'Suggestion deleted successfully', data: deleteSuggestion })
+        return res.status(200).json({ status: 200, message: 'Suggestion deleted successfully', values: deleteSuggestion })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 500, message: 'Internal Server Error' })
@@ -83,7 +88,7 @@ exports.editSuggestion = async (req, res) => {
                 latin_name
             }
         })
-        return res.status(200).json({ status: 200, message: 'Suggestion updated successfully', data: editSuggestion })
+        return res.status(200).json({ status: 200, message: 'Suggestion updated successfully', values: editSuggestion })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 500, message: 'Internal Server Error' })
