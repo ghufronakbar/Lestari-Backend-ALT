@@ -4,7 +4,7 @@ const adminVerification = require("./middleware/admin_verification");
 const userVerification = require("./middleware/user_verification");
 const apiAdmin = require("./controllers/admin");
 const apiUser = require("./controllers/user");
-const routeCache = require('./middleware/routeCache');
+const setCache = require('./middleware/setCache');
 const clearCache = require("./middleware/clearCache");
 
 module.exports = function (app) {
@@ -15,67 +15,67 @@ module.exports = function (app) {
 
   app
     .route("/v1/web/animals")
-    .get(adminVerification, apiAdmin.animal_controller.webanimals);
+    .get(adminVerification, setCache(1800), apiAdmin.animal_controller.webanimals);
 
   app
     .route("/v1/web/animal/:id")
-    .get(adminVerification, apiAdmin.animal_controller.webanimalid);
+    .get(adminVerification, setCache(1800), apiAdmin.animal_controller.webanimalid);
 
   app
     .route("/v1/web/animal/edit/:id")
-    .put(adminVerification, apiAdmin.animal_controller.webanimaledit);
+    .put(adminVerification, clearCache("animal"), apiAdmin.animal_controller.webanimaledit);
 
   app
     .route("/v1/web/animal/delete/:id")
-    .delete(adminVerification, apiAdmin.animal_controller.webanimaldelete);
+    .delete(adminVerification, clearCache("animal"), apiAdmin.animal_controller.webanimaldelete);
 
   app
     .route("/v1/web/request/accounts")
-    .get(adminVerification, apiAdmin.request_account_controller.webrequestaccounts);
+    .get(adminVerification, setCache(3600), apiAdmin.request_account_controller.webrequestaccounts);
 
   app
     .route("/v1/web/request/account/:id")
-    .get(adminVerification, apiAdmin.request_account_controller.webrequestaccountid);
+    .get(adminVerification, setCache(3600), apiAdmin.request_account_controller.webrequestaccountid);
 
   app
     .route("/v1/web/request/account/approve/:id")
-    .put(adminVerification, apiAdmin.request_account_controller.webapproverequestaccount);
+    .put(adminVerification, clearCache("account"), apiAdmin.request_account_controller.webapproverequestaccount);
 
   app
     .route("/v1/web/request/datas")
-    .get(adminVerification, apiAdmin.request_data_controller.webrequestdatas);
+    .get(adminVerification, setCache(3600), apiAdmin.request_data_controller.webrequestdatas);
 
   app
     .route("/v1/web/request/data/:id")
-    .get(adminVerification, apiAdmin.request_data_controller.webrequestdataid);
+    .get(adminVerification, setCache(3600), apiAdmin.request_data_controller.webrequestdataid);
 
   app
     .route("/v1/web/request/data/approve/:id")
-    .put(adminVerification, apiAdmin.request_data_controller.webapproverequestdata);
+    .put(adminVerification, clearCache("data"), apiAdmin.request_data_controller.webapproverequestdata);
 
   app
     .route("/v1/web/request/data/approve/send")
-    .post(adminVerification, apiAdmin.request_data_controller.websendrequestdata);
+    .post(adminVerification, clearCache("data"), apiAdmin.request_data_controller.websendrequestdata);
 
   app
     .route("/v1/web/history/request/data")
-    .get(adminVerification, apiAdmin.history_request_data_controller.webhistoryrequestdatas);
+    .get(adminVerification, setCache(3600), apiAdmin.history_request_data_controller.webhistoryrequestdatas);
 
   app
     .route("/v1/web/history/request/data/:id")
-    .get(adminVerification, apiAdmin.history_request_data_controller.webhistoryrequestdataid);
+    .get(adminVerification, setCache(3600), apiAdmin.history_request_data_controller.webhistoryrequestdataid);
 
   app
     .route("/v1/web/users")
-    .get(adminVerification, apiAdmin.user_controller.webusers);
+    .get(adminVerification, setCache(3600), apiAdmin.user_controller.webusers);
 
   app
     .route("/v1/web/user/:id")
-    .get(adminVerification, apiAdmin.user_controller.webuserid);
+    .get(adminVerification, setCache(3600), apiAdmin.user_controller.webuserid);
 
   app
     .route("/v1/web/user/suspend")
-    .put(adminVerification, apiAdmin.user_controller.webusersuspend);
+    .put(adminVerification, clearCache("user"), apiAdmin.user_controller.webusersuspend);
 
 
   // CREATE ACCOUNT
@@ -96,40 +96,40 @@ module.exports = function (app) {
   // GET ADMINS
   app
     .route("/v1/web/admins")
-    .get(adminVerification, apiAdmin.account_controller.show_admin);
+    .get(adminVerification, setCache(86400), apiAdmin.account_controller.show_admin);
 
   // DELETE ADMIN
   app
     .route("/v1/web/admin/delete/:id_admin")
-    .delete(adminVerification, apiAdmin.account_controller.delete_admin);
+    .delete(adminVerification, clearCache("admin"), apiAdmin.account_controller.delete_admin);
 
   // EDIT ADMIN
   app
     .route("/v1/web/admin/edit")
-    .put(adminVerification, apiAdmin.account_controller.update_admin);
+    .put(adminVerification, clearCache("admin"), apiAdmin.account_controller.update_admin);
 
   // PROFILE 
   app
     .route("/v1/web/admin/profile")
-    .get(adminVerification, apiAdmin.account_controller.admin_profile);
+    .get(adminVerification, setCache(86400, true), apiAdmin.account_controller.admin_profile);
 
 
   // SUGGESTIONS
   app
-    .route("/v1/web/admin/suggestions")
-    .get(adminVerification, apiAdmin.suggestion_controller.getAllSugestions);
+    .route("/v1/web/suggestions")
+    .get(adminVerification, setCache(86400), apiAdmin.suggestion_controller.getAllSugestions);
 
   app
-    .route("/v1/web/admin/suggestions")
-    .post(clearCache('suggestion'), adminVerification, apiAdmin.suggestion_controller.createSuggestion)
+    .route("/v1/web/suggestions")
+    .post(adminVerification, clearCache('suggestion'), adminVerification, apiAdmin.suggestion_controller.createSuggestion)
 
   app
-    .route("/v1/web/admin/suggestions/:id")
-    .put(clearCache('suggestion'), adminVerification, apiAdmin.suggestion_controller.editSuggestion)
+    .route("/v1/web/suggestions/:id")
+    .put(adminVerification, clearCache('suggestion'), apiAdmin.suggestion_controller.editSuggestion)
 
   app
-    .route("/v1/web/admin/suggestions/:id")
-    .delete(clearCache('suggestion'), adminVerification, apiAdmin.suggestion_controller.deleteSuggestion)
+    .route("/v1/web/suggestions/:id")
+    .delete(adminVerification, clearCache('suggestion'), apiAdmin.suggestion_controller.deleteSuggestion)
 
 
 
@@ -146,86 +146,88 @@ module.exports = function (app) {
 
   app
     .route("/v1/mob/animals/editable")
-    .get(userVerification, apiUser.editable_animal_controller.mobeditableanimals);
+    .get(userVerification, setCache(43200, true), apiUser.editable_animal_controller.mobeditableanimals);
 
-  app.route("/v1/mob/user/check").get(userVerification, apiUser.auth.check_user);
+  app
+    .route("/v1/mob/user/check")
+    .get(userVerification,setCache(300,true), apiUser.auth.check_user);
 
   app
     .route("/v1/mob/animal/:id_animal")
-    .get(userVerification, apiUser.editable_animal_controller.mobeditableanimalid);
+    .get(userVerification, setCache(43200, true), apiUser.editable_animal_controller.mobeditableanimalid);
 
   app
     .route("/v1/mob/animal/add")
-    .post(userVerification, apiUser.editable_animal_controller.mobanimalpost);
+    .post(userVerification,clearCache('animal',true), apiUser.editable_animal_controller.mobanimalpost);
 
   app
     .route("/v1/mob/animal/editable/edit/:id_animal") // without image
-    .put(userVerification, apiUser.editable_animal_controller.mobediteditableanimal);
+    .put(userVerification,clearCache('animal',true), apiUser.editable_animal_controller.mobediteditableanimal);
 
   app
     .route("/v1/mob/animal/editable/delete/:id_animal")
-    .delete(userVerification, apiUser.editable_animal_controller.deleteAnimalById);
+    .delete(userVerification,clearCache('animal',true), apiUser.editable_animal_controller.deleteAnimalById);
 
   app
     .route("/v1/mob/animal/upload/image") // image 
-    .post(userVerification, apiUser.editable_animal_controller.mob_upload_image);
+    .post(userVerification,clearCache('animal',true), apiUser.editable_animal_controller.mob_upload_image);
 
   app
     .route("/v1/mob/animal/delete/image") // delete image
-    .delete(userVerification, apiUser.editable_animal_controller.deleteImageByURL);
+    .delete(userVerification,clearCache('animal',true), apiUser.editable_animal_controller.deleteImageByURL);
 
   app
     .route("/v1/mob/animals/history")
-    .get(userVerification, apiUser.history_animal_controller.mobhistoryanimals);
+    .get(userVerification,setCache(43200, true), apiUser.history_animal_controller.mobhistoryanimals);
 
   app
     .route("/v1/mob/animal/history/:id_animal")
-    .get(userVerification, apiUser.history_animal_controller.mobhistoryanimalid);
+    .get(userVerification,setCache(43200, true), apiUser.history_animal_controller.mobhistoryanimalid);
 
   app
     .route("/v1/mob/user/account")
-    .get(userVerification, apiUser.account_controller.mobaccount);
+    .get(userVerification,setCache(43200, true), apiUser.account_controller.mobaccount);
 
   app
     .route("/v1/mob/user/account/edit/name")
-    .put(userVerification, apiUser.account_controller.mobaccounteditname);
+    .put(userVerification,clearCache('user',true), apiUser.account_controller.mobaccounteditname);
 
   app
     .route("/v1/mob/user/account/edit/picture")
-    .put(userVerification, apiUser.account_controller.mob_update_profile);
+    .put(userVerification,clearCache('user',true), apiUser.account_controller.mob_update_profile);
 
 
   app
     .route("/v1/mob/user/account/edit/password")
-    .put(userVerification, apiUser.account_controller.mobaccounteditpassword);
+    .put(userVerification,clearCache('user',true), apiUser.account_controller.mobaccounteditpassword);
 
   app
     .route("/v1/mob/user/request-datas")
-    .get(userVerification, apiUser.request_data_controller.mobhistoryrequestdata);
+    .get(userVerification,setCache(43200, true), apiUser.request_data_controller.mobhistoryrequestdata);
 
   app
     .route("/v1/mob/user/request-data/:id_request_data")
-    .get(userVerification, apiUser.request_data_controller.mobhistoryrequestdatabyid);
+    .get(userVerification,setCache(43200, true), apiUser.request_data_controller.mobhistoryrequestdatabyid);
 
   app
     .route("/v1/mob/user/request-data/add")
-    .post(userVerification, apiUser.request_data_controller.mobaddrequestdata);
+    .post(userVerification,clearCache('data',true), apiUser.request_data_controller.mobaddrequestdata);
 
   app
     .route("/v1/mob/user/request-data/add/attachment")
-    .post(userVerification, apiUser.request_data_controller.uploadAttachment);
+    .post(userVerification,clearCache('data',true), apiUser.request_data_controller.uploadAttachment);
 
   app
     .route("/v1/mob/user/register")
-    .post(apiUser.account_controller.mobregisteruser);
+    .post(clearCache('account'), apiUser.account_controller.mobregisteruser);
 
   app
     .route("/v1/mob/user/check-password")
-    .post(userVerification, apiUser.account_controller.mobaccountpassword);
+    .post( userVerification,clearCache('check',true), apiUser.account_controller.mobaccountpassword);
 
   app
     .route("/v1/mob/user/new_password")
-    .put(userVerification, apiUser.account_controller.mobpasswordedit);
+    .put(userVerification,clearCache('check',true), apiUser.account_controller.mobpasswordedit);
 
   // FORGET PASSWORD
   app
@@ -238,6 +240,6 @@ module.exports = function (app) {
 
   // SUGESTIONS
   app.route("/v1/mob/user/suggestion")
-    .get(routeCache(600), apiUser.suggestion_controller.showSuggestion);
+    .get(userVerification, setCache(86400), apiUser.suggestion_controller.showSuggestion);
 };
 
