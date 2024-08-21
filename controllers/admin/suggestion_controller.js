@@ -5,18 +5,26 @@ const prisma = new PrismaClient();
 
 exports.getAllSugestions = async (req, res) => {
     const page = req.query.page || 1
+    const search = req.query.search || ''
     try {
+        const where = {
+            OR: [
+                { local_name: { contains: search, mode: 'insensitive' } },
+                { latin_name: { contains: search, mode: 'insensitive' } },
+            ]
+        }
         const getSuggestion = await prisma.suggestion.findMany({
             orderBy: {
                 id_suggestion: 'desc'
             },
             skip: (page - 1) * 10,
-            take: 10
+            take: 10,
+            where           
         })
         const pagination = {
             page,
-            total_page: Math.ceil((await prisma.suggestion.count()) / 10),
-            total_data: await prisma.suggestion.count()
+            total_page: Math.ceil((await prisma.suggestion.count({ where: where})) / 10),
+            total_data: await prisma.suggestion.count({ where: where})
         }
         return res.status(200).json({ status: 200,pagination, values: getSuggestion })
     } catch (error) {
