@@ -61,7 +61,7 @@ exports.webrequestdatas = async (req, res) => {
         return res.status(200).json({ status: 200, pagination, values: requestDatas });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -74,13 +74,13 @@ exports.webrequestdataid = async (req, res) => {
         });
 
         if (!requestData) {
-            return res.status(404).json({ status: 404, message: 'Request data not found' });
+            return res.status(404).json({ status: 404, message: 'Data tidak ditemukan' });
         }
 
         return res.status(200).json({ status: 200, values: [requestData] });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -126,17 +126,17 @@ exports.webapproverequestdata = async (req, res) => {
             `;
 
             await sendEmail(email, "Data Datwa Liar", htmlContent);
-            return res.status(200).json({ status: 200, message: "Request rejected" });
+            return res.status(200).json({ status: 200, message: "Permintaan data konservasi satwa ditolak" });
         } else if (approve === 2) {
             await prisma.request_Datas.update({
                 where: { id_request_data: id },
                 data: { approve: 2 }
             });
-            return res.status(200).json({ status: 200, message: "Request approved" });
+            return res.status(200).json({ status: 200, message: "Permintaan data konservasi satwa diterima" });
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -151,7 +151,7 @@ exports.websendrequestdata = async (req, res) => {
 
     try {
         if(!id_request_data){
-            return res.status(400).json({ status: 400, message: "ID request data is required." });
+            return res.status(400).json({ status: 400, message: "ID diperlukan" });
         }
         
         const validateRequestData = await prisma.request_Datas.findFirst({
@@ -160,9 +160,9 @@ exports.websendrequestdata = async (req, res) => {
         });
 
         if (!validateRequestData) {
-            return res.status(404).json({ status: 404, message: "No data found for the specified ID." });
+            return res.status(404).json({ status: 404, message: "Data tidak ditemukan" });
         } else if (validateRequestData && validateRequestData.approve !== 2) {
-            return res.status(400).json({ status: 400, message: "Not allowed to send data." });
+            return res.status(400).json({ status: 400, message: "Tidak dapat mengirimkan permintaan" });
         }
 
         const sendData = await prisma.send_Datas.create({
@@ -189,7 +189,7 @@ exports.websendrequestdata = async (req, res) => {
         });
 
         if (!requestData) {
-            return res.status(404).json({ status: 404, message: "No data found for the specified ID." });
+            return res.status(404).json({ status: 404, message: "Data tidak ditemukan" });
         }
 
         const { name, email, profession, instances, subject, body, id_user } = requestData;
@@ -237,7 +237,7 @@ exports.websendrequestdata = async (req, res) => {
         });
 
         if (animalsData.length === 0) {
-            return res.status(400).json({ status: 400, message: "There's no data in range" });
+            return res.status(400).json({ status: 400, message: "Tidak ada data dalam rentang waktu tersebut" });
         }
 
         const result = animalsData.map(row => {
@@ -307,9 +307,9 @@ exports.websendrequestdata = async (req, res) => {
 
         await sendEmail(email, "Data Satwa Liar", htmlContent);
 
-        return res.status(200).json({ status: 200, message: "Request data sent successfully" });
+        return res.status(200).json({ status: 200, message: "Pengiriman data sukses" });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: "Failed to send request data" });
+        return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
     }
 };

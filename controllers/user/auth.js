@@ -64,7 +64,7 @@ exports.login = async function (req, res) {
     console.error("Error during login:", error);
     res.status(500).json({
       Error: true,
-      Message: "Internal Server Error",
+      Message: "Terjadi kesalahan sistem",
     });
   }
 };
@@ -97,7 +97,7 @@ exports.check_user = async function (req, res) {
     console.error("Error fetching user:", error);
     res.status(500).json({
       Error: true,
-      Message: "Internal Server Error",
+      Message: "Terjadi kesalahan sistem",
     });
   }
 };

@@ -29,7 +29,7 @@ exports.getAllSugestions = async (req, res) => {
         return res.status(200).json({ status: 200,pagination, values: getSuggestion })
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' })
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' })
     }
 }
 
@@ -37,7 +37,7 @@ exports.createSuggestion = async (req, res) => {
     const { local_name, latin_name } = req.body
     try {
         if (!local_name || !latin_name) {
-            return res.status(400).json({ status: 400, message: 'Field cannot be empty' })
+            return res.status(400).json({ status: 400, message: 'Semua kolom harus diisi' })
         }
 
         const checkSuggestion = await prisma.suggestion.findFirst({
@@ -49,7 +49,7 @@ exports.createSuggestion = async (req, res) => {
             }
         })
         if (checkSuggestion) {
-            return res.status(400).json({ status: 400, message: 'Suggestion already exists' })
+            return res.status(400).json({ status: 400, message: 'Data sudah ada' })
         }
 
         const createSuggestion = await prisma.suggestion.create({
@@ -58,10 +58,10 @@ exports.createSuggestion = async (req, res) => {
                 latin_name
             }
         })
-        return res.status(200).json({ status: 200, message: 'Suggestion created successfully', values: createSuggestion })
+        return res.status(200).json({ status: 200, message: 'Berhasil menambahkan data', values: createSuggestion })
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' })
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' })
     }
 }
 
@@ -73,10 +73,10 @@ exports.deleteSuggestion = async (req, res) => {
                 id_suggestion
             }
         })
-        return res.status(200).json({ status: 200, message: 'Suggestion deleted successfully', values: deleteSuggestion })
+        return res.status(200).json({ status: 200, message: 'Berhasil menghapus data', values: deleteSuggestion })
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' })
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' })
     }
 }
 
@@ -85,7 +85,7 @@ exports.editSuggestion = async (req, res) => {
     const { local_name, latin_name } = req.body
     try {
         if (!local_name || !latin_name) {
-            return res.status(400).json({ status: 400, message: 'Field cannot be empty' })
+            return res.status(400).json({ status: 400, message: 'Semua kolom harus diisi' })
         }
         const editSuggestion = await prisma.suggestion.update({
             where: {
@@ -96,9 +96,9 @@ exports.editSuggestion = async (req, res) => {
                 latin_name
             }
         })
-        return res.status(200).json({ status: 200, message: 'Suggestion updated successfully', values: editSuggestion })
+        return res.status(200).json({ status: 200, message: 'Berhasil mengedit data', values: editSuggestion })
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' })
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' })
     }
 }

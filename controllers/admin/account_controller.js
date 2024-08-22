@@ -61,7 +61,7 @@ exports.login = async (req, res) => {
 
         res.json({
             success: true,
-            message: "Token JWT Generated!",
+            message: "Token JWT berhasil dibuat dengan email dan password yang diberikan.",
             token: token
         });
 
@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
         console.log("Error during login:", error);
         res.status(500).json({
             Error: true,
-            Message: "Internal server error"
+            Message: "Terjadi kesalahan sistem"
         });
     }
 };
@@ -83,7 +83,7 @@ exports.create_admin = async (req, res) => {
     const baseUrl = `http://${hostname}${port}`;
 
     try {
-        if (!email || !name) { return res.status(400).json({ status: 400, message: "Email and name required" }) }
+        if (!email || !name) { return res.status(400).json({ status: 400, message: "Email dan Nama wajib diisi" }) }
 
         const checkEmail = await prisma.admins.findFirst({
             where: {
@@ -91,7 +91,7 @@ exports.create_admin = async (req, res) => {
             }
         });
 
-        if (checkEmail) { return res.status(400).json({ status: 400, message: "Email already exists" }) }
+        if (checkEmail) { return res.status(400).json({ status: 400, message: "Email sudah terdaftar" }) }
 
         const token = jwt.sign({ email, name }, process.env.JWT_SECRET, {
             expiresIn: '12h'
@@ -141,12 +141,12 @@ exports.create_admin = async (req, res) => {
         await sendEmail(email, "Verifikasi Akun", htmlContent);
 
 
-        return res.status(200).json({ status: 200, email, message: "Verification Email Sent to " + email, token });
+        return res.status(200).json({ status: 200, email, message: "Kami telah mengirimkan email verifikasi ke " + email, token });
 
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ Message: "Internal server error" });
+        return res.status(500).json({ Message: "Terjadi kesalahan sistem" });
     }
 }
 
@@ -154,7 +154,7 @@ exports.verify_account = async (req, res) => {
     const { token } = req.params;
 
     try {
-        if (!token) { return res.status(400).json({ status: 400, message: "Token required" }) }
+        if (!token) { return res.status(400).json({ status: 400, message: "Token wajib diisi" }) }
 
         const checkToken = await prisma.verify.findFirst({
             where: {
@@ -162,11 +162,11 @@ exports.verify_account = async (req, res) => {
             }
         });
 
-        if (!checkToken) { return res.status(400).send("Invalid key") }
+        if (!checkToken) { return res.status(400).send("Token tidak valid") }
 
-        if (checkToken.used === 1) { return res.status(400).send("Key already used") }
+        if (checkToken.used === 1) { return res.status(400).send("Token sudah digunakan") }
 
-        if (checkToken.expired_at < new Date()) { return res.status(400).send("Key expired") }
+        if (checkToken.expired_at < new Date()) { return res.status(400).send("Token sudah kedaluwarsa") }
 
         await prisma.verify.update({
             where: {
@@ -230,7 +230,7 @@ exports.verify_account = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ Message: "Internal server error" });
+        return res.status(500).json({ Message: "Terjadi kesalahan sistem" });
     }
 }
 
@@ -242,7 +242,7 @@ exports.reset_password = async (req, res) => {
     const baseUrl = `http://${hostname}${port}`;
 
     try {
-        if (!email || email === "") { return res.status(400).json({ status: 400, message: "Email required" }) }
+        if (!email || email === "") { return res.status(400).json({ status: 400, message: "Email wajib diisi" }) }
 
         const checkEmail = await prisma.admins.findFirst({
             where: {
@@ -250,7 +250,7 @@ exports.reset_password = async (req, res) => {
             }
         });
 
-        if (!checkEmail) { return res.status(400).json({ status: 400, message: `Email ${email} not found` }) }
+        if (!checkEmail) { return res.status(400).json({ status: 400, message: `Email ${email} tidak terdaftar` }) }
 
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "12h" });
 
@@ -296,13 +296,13 @@ exports.reset_password = async (req, res) => {
 
         await sendEmail(email, "Reset Password", htmlContent);
 
-        return res.status(200).json({ status: 200, message: "Email sent to " + email });
+        return res.status(200).json({ status: 200, message: "Silahkan cek email " + email });
 
 
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: "Internal server error" });
+        return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
 
     }
 
@@ -320,7 +320,7 @@ exports.delete_admin = async (req, res) => {
         });
 
         if (checkSuperAdmin) {
-            return res.status(400).json({ status: 400, message: "Super Admin cannot be deleted" });
+            return res.status(400).json({ status: 400, message: "Super Admin tidak bisa di hapus" });
         }
 
         await prisma.admins.delete({
@@ -328,11 +328,11 @@ exports.delete_admin = async (req, res) => {
                 id_admin
             }
         });
-        return res.status(200).json({ status: 200, message: "Admin deleted" });
+        return res.status(200).json({ status: 200, message: "Admin berhasilar di hapus" });
     }
     catch {
         console.log(error);
-        return res.status(500).json({ status: 500, message: "Internal server error" });
+        return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
     }
 }
 
@@ -392,7 +392,7 @@ exports.show_admin = async (req, res) => {
         return res.status(200).json({ status: 200, pagination, values: admins });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 }
 
@@ -403,7 +403,7 @@ exports.update_admin = async (req, res) => {
 
     try {
         if (!name) {
-            return res.status(400).json({ status: 400, message: 'Name is required' });
+            return res.status(400).json({ status: 400, message: 'Nama tidak boleh kosong' });
         }
         if ((!password && !confirmation_password) || (password == "" && confirmation_password == "")) {
             const updateProfile = await prisma.admins.update({
@@ -414,12 +414,12 @@ exports.update_admin = async (req, res) => {
                     name,
                 }
             });
-            return res.status(200).json({ status: 200, message: 'Profile updated' });
+            return res.status(200).json({ status: 200, message: 'Profil berhasilil di update' });
         } else if (password && confirmation_password) {
             if (password !== confirmation_password) {
-                return res.status(400).json({ status: 400, message: 'Password and confirmation password do not match' });
+                return res.status(400).json({ status: 400, message: 'Password tidak cocok' });
             } else if (password.length < 8) {
-                return res.status(400).json({ status: 400, message: 'Password must be at least 8 characters' });
+                return res.status(400).json({ status: 400, message: 'Password minimal 8 karakter' });
             }
             const updateProfile = await prisma.admins.update({
                 where: {
@@ -430,12 +430,12 @@ exports.update_admin = async (req, res) => {
                     password: md5(password)
                 }
             });
-            return res.status(200).json({ status: 200, message: 'Profile and Password updated' });
+            return res.status(200).json({ status: 200, message: 'Profil berhasil di update' });
         }
     }
     catch {
         console.log(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 }
 
@@ -450,6 +450,6 @@ exports.admin_profile = async (req, res) => {
         return res.status(200).json({ status: 200, values: admin });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 }

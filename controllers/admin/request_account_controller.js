@@ -86,7 +86,7 @@ exports.webrequestaccounts = async (req, res) => {
         return res.status(200).json({ status: 200, pagination, values: requestAccounts });
     } catch (error) {
         console.error('Error fetching request accounts:', error);
-        return res.status(500).json({ status: 500, message: 'Failed to fetch request accounts' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -98,13 +98,13 @@ exports.webrequestaccountid = async (req, res) => {
         });
 
         if (!requestAccount) {
-            return res.status(404).json({ status: 404, message: 'Request account not found' });
+            return res.status(404).json({ status: 404, message: 'Data tidak ditemukan' });
         }
 
         return res.status(200).json({ status: 200, values: [requestAccount] });
     } catch (error) {
         console.error(`Error fetching request account with id ${id}:`, error);
-        return res.status(500).json({ status: 500, message: 'Failed to fetch request account' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -121,7 +121,7 @@ exports.webapproverequestaccount = async (req, res) => {
         });
 
         if (!requestAccount) {
-            return res.status(404).json({ status: 404, message: 'Request account not found' });
+            return res.status(404).json({ status: 404, message: 'Data tidak ditemukan' });
         }
 
         // Email dari request account
@@ -220,9 +220,9 @@ exports.webapproverequestaccount = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ status: 200, message: 'Request account approved successfully', data: updatedRequestAccount });
+        return res.status(200).json({ status: 200, message: 'Permintaan pengiriman data pembuatan akun', data: updatedRequestAccount });
     } catch (error) {
         console.error(`Error approving request account with id ${id}:`, error);
-        return res.status(500).json({ status: 500, message: 'Failed to approve request account' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };

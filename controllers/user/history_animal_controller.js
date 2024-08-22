@@ -40,7 +40,7 @@ exports.mobhistoryanimals = async (req, res) => {
     return res.status(200).json({ status: 200, values: results });
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Internal Server Error');
+    return res.status(500).send('Terjadi kesalahan sistem');
   }
 };
 
@@ -94,7 +94,7 @@ exports.mobhistoryanimalid = async (req, res) => {
     return res.status(200).json({ status: 200, values: [result] });
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Internal Server Error');
+    return res.status(500).send('Terjadi kesalahan sistem');
   }
 };
 
@@ -123,7 +123,7 @@ exports.mobanimalpost = async (req, res) => {
     return res.status(200).json({ status: 200, message: "Success" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -154,7 +154,7 @@ exports.mobediteditableanimal = async (req, res) => {
     return res.status(200).json({ status: 200, message: "Success" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -184,6 +184,6 @@ exports.mobediteditableanimalimage = async (req, res) => {
     return res.status(200).json({ status: 200, message: "Edited" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };

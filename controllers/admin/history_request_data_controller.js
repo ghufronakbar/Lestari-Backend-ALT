@@ -79,7 +79,7 @@ exports.webhistoryrequestdatas = async (req, res) => {
         return res.status(200).json({ status: 200, pagination, values: results });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -95,7 +95,7 @@ exports.webhistoryrequestdataid = async (req, res) => {
         });
 
         if (!history) {
-            return res.status(404).json({ status: 404, message: 'History Request Data not found' });
+            return res.status(404).json({ status: 404, message: 'Data tidak ditemukan' });
         }
 
         const result = {
@@ -126,6 +126,6 @@ exports.webhistoryrequestdataid = async (req, res) => {
         return res.status(200).json({ status: 200, values: [result] });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };

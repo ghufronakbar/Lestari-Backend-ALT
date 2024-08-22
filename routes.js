@@ -211,11 +211,11 @@ module.exports = function (app) {
 
   app
     .route("/v1/mob/user/request-data/add")
-    .post(userVerification,clearCache('data',true), apiUser.request_data_controller.mobaddrequestdata);
+    .post(userVerification,clearCache('data'), apiUser.request_data_controller.mobaddrequestdata);
 
   app
     .route("/v1/mob/user/request-data/add/attachment")
-    .post(userVerification,clearCache('data',true), apiUser.request_data_controller.uploadAttachment);
+    .post(userVerification, clearCache('data'), apiUser.request_data_controller.uploadAttachment);
 
   app
     .route("/v1/mob/user/register")
@@ -237,6 +237,9 @@ module.exports = function (app) {
   // REQUEST DATA GUEST
   app.route("/v1/web/user/request-data")
     .post(apiUser.request_data_controller.requestDataGuest);
+
+  app.route("/v1/web/user/request-data/attachment")
+    .post(apiUser.request_data_controller.uploadAttachment);
 
   // SUGESTIONS
   app.route("/v1/mob/user/suggestion")

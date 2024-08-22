@@ -11,6 +11,7 @@ const { extractFileIdFromUrl } = require('../../lib/extractFileIdFromUrl');
 
 
 const { PrismaClient } = require('@prisma/client');
+const { formattedDateTime } = require("../../lib/date");
 const prisma = new PrismaClient();
 
 exports.mobaccount = async (req, res) => {
@@ -35,7 +36,7 @@ exports.mobaccount = async (req, res) => {
     });
 
     if (!userData) {
-      return res.status(404).json({ status: 404, message: "User not found" });
+      return res.status(404).json({ status: 404, message: "Data tidak ditemukan" });
     }
 
     const results = {
@@ -49,7 +50,7 @@ exports.mobaccount = async (req, res) => {
     return res.status(200).json({ status: 200, values: results });
   } catch (error) {
     console.error("Error fetching user data:", error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -68,7 +69,7 @@ exports.mobaccountpassword = async (req, res) => {
     });
 
     if (!userData) {
-      return res.status(404).json({ status: 404, message: "User not found" });
+      return res.status(404).json({ status: 404, message: "Data tidak ditemukan" });
     }
 
     const oldPassword = md5(password);
@@ -80,7 +81,7 @@ exports.mobaccountpassword = async (req, res) => {
     }
   } catch (error) {
     console.error("Error checking password:", error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -98,10 +99,10 @@ exports.mobpasswordedit = async (req, res) => {
       },
     });
 
-    return res.status(200).json({ status: 200, message: "Password updated successfully" });
+    return res.status(200).json({ status: 200, message: "Password berhasil diperbarui" });
   } catch (error) {
     console.error("Error updating password:", error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -130,10 +131,10 @@ exports.mobregisteruser = async (req, res) => {
       },
     });
 
-    return res.status(200).json({ keterangan: "berhasil menambah data" });
+    return res.status(200).json({ keterangan: "Berhasil menambah data" });
   } catch (error) {
     console.error("Error registering user:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -155,10 +156,10 @@ exports.mobaccounteditname = async (req, res) => {
       },
     });
 
-    return res.status(200).json({ status: 200, keterangan: "berhasil mengedit data" });
+    return res.status(200).json({ status: 200, keterangan: "Berhasil mengedit data" });
   } catch (error) {
     console.error("Error editing user data:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -181,10 +182,10 @@ exports.mobaccounteditpicture = async (req, res) => {
       },
     });
 
-    return res.status(200).json({ status: 200, message: "Profile picture updated successfully" });
+    return res.status(200).json({ status: 200, message: "Foto profil berhasil diperbarui" });
   } catch (error) {
     console.error("Error updating profile picture:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -200,7 +201,7 @@ exports.mob_update_profile = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).send("Data tidak ditemukan");
     }
 
     const upload = multer({
@@ -259,13 +260,13 @@ exports.mob_update_profile = async (req, res) => {
         image_url: `https://drive.google.com/uc?export=view&id=${uploadedFile.id}`,
         image_id: uploadedFile.id,
         message: deleteError ? 
-          "Profile picture updated successfully, but previous picture could not be deleted" : 
-          "Profile picture updated successfully",
+          "Profile berhasil diperbarui tetapi terdapat kesalahan saat menghapus gambar sebelumnya" : 
+          "Profile berhasil diperbarui",
       });
     });
   } catch (error) {
     console.error("Error updating profile:", error);
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).send("Terjadi kesalahan sistem");
   }
 };
 
@@ -286,7 +287,7 @@ exports.mobaccounteditpassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ status: 404, message: "User not found" });
+      return res.status(404).json({ status: 404, message: "Data tidak ditemukan" });
     }
 
     const verification_password = user.password;
@@ -304,13 +305,13 @@ exports.mobaccounteditpassword = async (req, res) => {
         },
       });
 
-      return res.status(200).json({ status: 200, message: "Password updated successfully" });
+      return res.status(200).json({ status: 200, message: "Password berhasil diperbarui" });
     } else {
-      return res.status(400).json({ status: 400, message: "Old password is incorrect" });
+      return res.status(400).json({ status: 400, message: "Password lama tidak sesuai" });
     }
   } catch (error) {
     console.error("Error updating password:", error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };
 
@@ -319,14 +320,14 @@ exports.mobforgotpassword = async (req, res) => {
 
   try {
     if (!otp && email) {
-      const user = await prisma.users.findUnique({
+      const user = await prisma.users.findFirst({
         where: {
           email: email,
         },
       });
 
       if (!user) {
-        return res.status(400).send(`${email} Is Not User!`);
+        return res.status(400).send(`${email} tidak terdaftar`);
       }
 
       let otpcode = "";
@@ -342,6 +343,7 @@ exports.mobforgotpassword = async (req, res) => {
           email: email,
           otp: otpcode,
           expired_at: expired_at,
+          used: 0,
         },
       });
 
@@ -391,30 +393,33 @@ exports.mobforgotpassword = async (req, res) => {
 
       return res.status(200).json({
         status: 200,
-        message: `OTP Sent To Email ${email}`,
+        message: `OTP dikirim ke ${email}`,
       });
     } else if (email && otp) {
-      const user = await prisma.users.findUnique({
+      const user = await prisma.users.findFirst({
         where: {
           email: email,
         },
       });
 
       if (!user) {
-        return res.status(400).send(`${email} Is Not User!`);
+        return res.status(400).send(`${email} tidak terdaftar`);
       }
 
       const otpData = await prisma.otps.findFirst({
         where: {
-          email: email,
-          id_otp: {
-            equals: prisma.raw`SELECT MAX(id_otp) FROM otps WHERE email = ${email}`,
-          },
+          AND:[
+            {email},    
+            {otp}        
+          ]          
         },
-      });
+        orderBy: {
+          id_otp: "desc",
+        },
+      });      
 
       if (!otpData) {
-        return res.status(400).send("No OTP Found!");
+        return res.status(400).json({status:400, message: "OTP tidak ditemukan!"});
       }
 
       const confirmation_used = otpData.used;
@@ -423,18 +428,18 @@ exports.mobforgotpassword = async (req, res) => {
       const currentTime = new Date();
 
       if (confirmation_used === 1) {
-        return res.status(400).send("OTP Has Been Used!");
+        return res.status(400).json({status:400, message: "OTP sudah digunakan!"});
       } else if (confirmation_otp !== otp) {
-        return res.status(400).send("OTP Incorrect!");
+        return res.status(400).json({status:400, message: "OTP yang anda masukkan salah!"});
       } else if (currentTime > expired_at) {
-        return res.status(400).send("OTP Has Been Expired!");
+        return res.status(400).json({status:400, message: "OTP sudah kadaluarsa!"});
       } else if (currentTime < expired_at) {
         await prisma.otps.updateMany({
           where: {
-            email: email,
-            id_otp: {
-              equals: prisma.raw`SELECT MAX(id_otp) FROM otps WHERE email = ${email}`,
-            },
+           AND:[
+            {email},
+            {otp}
+           ]
           },
           data: {
             used: 1,
@@ -445,17 +450,15 @@ exports.mobforgotpassword = async (req, res) => {
         for (let i = 0; i < 6; i++) {
           new_password += Math.floor(Math.random() * 10);
         }
-
-        await prisma.users.update({
+        
+        const updatePassword = await prisma.users.updateMany({
           where: {
             email: email,
           },
           data: {
             password: md5(new_password),
           },
-        });
-
-        const formattedDateTime = `${currentTime.getHours().toString().padStart(2, "0")}:${currentTime.getMinutes().toString().padStart(2, "0")} ${day}, ${currentTime.getDate()} ${month} ${currentTime.getFullYear()}`;
+        });              
 
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -505,13 +508,13 @@ exports.mobforgotpassword = async (req, res) => {
         // Kirim email notifikasi reset password
         await transporter.sendMail(msg);
 
-        return res.status(200).json({ status: 200, message: "Password has been reset" });
+        return res.status(200).json({ status: 200, message: "Password berhasil direset, cek email anda" });
       }
     } else {
-      res.status(400).send("Insert Email!");
+      res.status(400).send("Masukkan Email");
     }
   } catch (error) {
     console.error("Error resetting password:", error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem" });
   }
 };

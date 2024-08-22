@@ -61,7 +61,7 @@ exports.mobeditableanimals = async (req, res) => {
     return res.status(200).json({ status: 200, values: results });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+    return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
   }
 };
 
@@ -117,7 +117,7 @@ exports.mobeditableanimalid = async (req, res) => {
     return res.status(200).json({ status: 200, values: [result] });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+    return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
   }
 };
 
@@ -160,7 +160,7 @@ exports.mobanimalpost = async (req, res) => {
     return res.status(200).json({ status: 200, values: animal });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+    return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
   }
 };
 
@@ -201,7 +201,7 @@ exports.deleteAnimalById = async (req, res) => {
     return res.status(200).json({ status: 200, values: { message: "Animal deleted successfully" } });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+    return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
   }
 };
 
@@ -256,7 +256,7 @@ exports.mobediteditableanimal = async (req, res) => {
     return res.status(200).json({ status: 200, values: updatedAnimal });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+    return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
   }
 };
 
@@ -314,7 +314,7 @@ exports.mob_upload_image = async (req, res) => {
       console.error('Error uploading image:', error);
       return res.status(500).json({
         success: 0,
-        message: 'Internal Server Error',
+        message: 'Terjadi kesalahan sistem',
       });
     }
   });

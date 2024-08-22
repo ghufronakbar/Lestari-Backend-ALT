@@ -82,7 +82,7 @@ exports.webanimals = async (req, res) => {
         return res.status(200).json({ status: 200, pagination, values: results });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -138,7 +138,7 @@ exports.webanimalid = async (req, res) => {
         return res.status(200).json({ status: 200, values: [result] });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -175,10 +175,10 @@ exports.webanimaledit = async (req, res) => {
             }
         });
 
-        return res.status(200).json({ status: 200, message: 'Animal updated successfully', animal: updatedAnimal });
+        return res.status(200).json({ status: 200, message: 'Data Satwa berhasil diupdate', animal: updatedAnimal });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };
 
@@ -190,9 +190,9 @@ exports.webanimaldelete = async (req, res) => {
             where: { id_animal: id }
         });
 
-        return res.status(200).json({ status: 200, message: 'Animal deleted successfully' });
+        return res.status(200).json({ status: 200, message: 'Data Satwa berhasil dihapus' });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 };

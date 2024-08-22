@@ -37,7 +37,7 @@ exports.mobhistoryrequestdata = async function (req, res) {
     return res.status(200).json({ status: 200, values: requestDatas });
   } catch (error) {
     console.error("Error fetching history request data:", error);
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).send("Terjadi kesalahan sistem");
   }
 };
 
@@ -67,7 +67,7 @@ exports.mobhistoryrequestdatabyid = async function (req, res) {
     return res.status(200).json({ status: 200, values: requestData });
   } catch (error) {
     console.error("Error fetching history request data by ID:", error);
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).send("Terjadi kesalahan sistem");
   }
 };
 
@@ -139,7 +139,7 @@ exports.mobaddrequestdata = async function (req, res) {
          
   } catch (error) {
     console.error("Error adding request data:", error);
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).send("Terjadi kesalahan sistem");
   }
 };
 
@@ -200,7 +200,7 @@ exports.uploadAttachment = async (req, res) => {
       console.error('Error uploading image:', error);
       return res.status(500).json({
         success: 0,
-        message: 'Internal Server Error',
+        message: 'Terjadi kesalahan sistem',
       });
     }
   });
@@ -208,9 +208,9 @@ exports.uploadAttachment = async (req, res) => {
 
 
 exports.requestDataGuest = async (req, res) => {
-  const { name, email, profession, instances, subject, body } = req.body;
+  const { name, email, profession, instances, subject, body, attachment } = req.body;  
 
-  if (!name || !email || !profession || !instances || !subject || !body) {
+  if (!name || !email || !profession || !instances || !subject || !body || !attachment) {
     return res.status(400).json({ status: 400, message: "Field tidak boleh kosong" });
   }
 
@@ -226,12 +226,13 @@ exports.requestDataGuest = async (req, res) => {
         approve: 0,
         id_user: 0,
         url: "",
+        attachment: attachment
       },
     });
 
     return res.status(200).json({ status: 200, message: "Permintaan data diterima, cek berkala email!" });
   } catch (error) {
     console.error("Error creating request data:", error);
-    return res.status(500).json({ status: 500, message: "Internal Server Error!" });
+    return res.status(500).json({ status: 500, message: "Terjadi kesalahan sistem!" });
   }
 };

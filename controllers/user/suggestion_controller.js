@@ -22,6 +22,6 @@ exports.showSuggestion = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        return res.status(500).json({ status: 500, message: 'Terjadi kesalahan sistem' });
     }
 }
