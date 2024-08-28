@@ -89,10 +89,6 @@ exports.webanimals = async (req, res) => {
 exports.webanimalid = async (req, res) => {
     const id = parseInt(req.params.id);
 
-    const { hostname } = req;
-    const port = req.port !== undefined ? `:${req.port}` : process.env.PORT !== undefined ? `:${process.env.PORT}` : '';
-    const baseUrl = `http://${hostname}${port}`;
-
     try {
         const animal = await prisma.animals.findUnique({
             where: {
