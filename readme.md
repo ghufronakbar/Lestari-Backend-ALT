@@ -573,7 +573,7 @@ Berfungsi untuk mendapatkan semua data permintaan berdasarkan autentikasi penggu
 ### Mendapatkan Data Permintaan Berdasarkan ID untuk Pengguna
 **GET /v1/mob/user/request-data/:id**
 
-Berfungsi untuk mendapatkan detaik data permintaan berdasarkan autentikasi pengguna.
+Berfungsi untuk mendapatkan detail data permintaan berdasarkan autentikasi pengguna.
 
 **Request Params:**
 - `id`: integer (Wajib) - Identifikasi unik data permintaan.
