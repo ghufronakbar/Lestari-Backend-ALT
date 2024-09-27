@@ -20,6 +20,6 @@ app.use("/v1/mob/data/", express.static("upload/data"));
 
 routes(app);
 
-app.listen(process.env.ROOT_PORT, () => {
-  console.log(`Server started on port ${process.env.ROOT_PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server started on port ${process.env.PORT}`);
 });

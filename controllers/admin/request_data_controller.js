@@ -295,11 +295,11 @@ exports.websendrequestdata = async (req, res) => {
                         <li><strong>Nama Penerima:</strong> ${name}</li>
                         <li><strong>Alamat Email Penerima:</strong> ${email}</li>                                            
                     </ul>
+                    <a href="${fileURL}" class="button">Unduh Data</a>
                     <p>Terima kasih telah menggunakan layanan kami. Jika Anda memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi kami di nomor yang tercantum di bawah ini atau melalui email.</p>
                     <p>Salam hormat,</p>
                     <p>Tim Lestari</p>
                     <p>Contact: ${process.env.EMAIL} | Phone: <a href="${process.env.PHONE_WA}">${process.env.PHONE_FORMATTED}</a></p>
-                    <a href="${fileURL}" class="button">Unduh Data</a>
                 </div>
             </body>
             </html>
